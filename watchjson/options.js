@@ -3,23 +3,14 @@
 // found in the LICENSE file.
 
 'use strict';
-let page = document.getElementById('buttonDiv');
-let urlText = document.getElementById('url');
+let optionsText = document.getElementById('options');
 let jqText = document.getElementById('jq');
-let periodSecondsText = document.getElementById('periodSeconds');
 chrome.storage.sync.get(['settings'],function({settings}){
-  jqText.value = settings.jq;
-  urlText.value = settings.url;
-  periodSecondsText.value = settings.periodSeconds||60;
+  optionsText.value = settings.options||JSON.stringify({urls:[],jq:'.[0]|{badge:"name",content:.}',periodSeconds:60});
+  jqText.value = settings.jq||".";
 });
 document.getElementById('saveButton').addEventListener('click', function(e) {
-  try {
-    if (!Array.isArray(JSON.parse(urlText.value))) throw 'URL must be array';
-  } catch (e) {
-    alert(e.toString());
-    return;
-  }
-  chrome.storage.sync.set({settings:{url:urlText.value, jq: jqText.value, periodSeconds:periodSecondsText.value}},()=>{
+  chrome.storage.sync.set({settings:{options:optionsText.value, jq: jqText.value}},()=>{
     chrome.runtime.sendMessage({type: "option changed"});
   });
 });

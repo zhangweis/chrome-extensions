@@ -2,18 +2,16 @@
 <html>
   <head>
     <style>
-      input[type=text] {
+      textarea,input[type=text] {
         width:100%
       }
     </style>
   </head>
   <body>
     <form>
-      URL:<input type='text' id='url'></input>
+      Options(urls, jq, periodSeconds): <textarea id='options' rows='10'></textarea>
       <br/>
-      jq({badge,content}):<input type='text' id='jq'></input>
-      <br/>
-      Period Seconds:<input type='text' id='periodSeconds'></input>
+      jq(filter which option to use):<input type='text' id='jq'></input>
       <br/>
     </form>
       <button id='saveButton'>Save</button>

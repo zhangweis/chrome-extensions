@@ -1,8 +1,10 @@
 var timer;
 function start() {
   chrome.storage.sync.get(['settings'], async ({settings})=>{
-loadJson();
-timer = setInterval(loadJson, Number(settings.periodSeconds)*1000);
+    var {options,jq:jqFilter} = settings;
+    const optionsObj = jq.json(JSON.parse(options), jqFilter);
+    loadJson();
+timer = setInterval(loadJson, Number(optionsObj.periodSeconds)*1000);
     });
 }
 start();
@@ -16,8 +18,10 @@ start();
 async function loadJson() {
 //    var url = 'https://www.okex.me/v3/c2c/tradingOrders/book?t=${timestamp}&quoteCurrency=CNY&baseCurrency=USDT&side=sell&paymentMethod=all&userType=all';
     chrome.storage.sync.get(['settings'], async ({settings})=>{
-        var {url, jq:jqPath} = settings;
-        var json = await Promise.all(JSON.parse(url).map(async (urlToGo)=> {
+        var {options,jq:jqFilter} = settings;
+        var optionsObj = jq.json(JSON.parse(options), jqFilter);
+        const {urls, jq:jqPath} = optionsObj;
+        var json = await Promise.all(urls.map(async (urlToGo)=> {
             urlToGo = urlToGo.replaceAll('${timestamp}',Number(new Date()));
         console.log('fetching '+urlToGo);
             var json = await (await fetch(urlToGo)).json();
