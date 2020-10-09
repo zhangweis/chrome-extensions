@@ -6,17 +6,21 @@
 
 
 let infoDiv = document.getElementById('info');
+let autoRefreshCheck = document.getElementById('autoRefresh');
+let dateDiv = document.getElementById('date');
 chrome.storage.onChanged.addListener(function(changes, namespace) {
   if (namespace != 'local') return;
   for(var key in changes) {
-    if(key === 'result') {
+    if(key === 'result' && autoRefreshCheck.checked) {
       refresh();
     }
   }
 });
 function refresh() {
 chrome.storage.local.get(["result"], function(info) {
-  infoDiv.innerHTML = tableify(info.result.content);
+  const {result} = info;
+  dateDiv.innerText = new Date(result.date).toISOString();
+  infoDiv.innerHTML = tableify(result.content);
 });
 }
 refresh();
