@@ -19,7 +19,7 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
 function refresh() {
 chrome.storage.local.get(["result"], function(info) {
   const {result} = info;
-  dateDiv.innerText = new Date(result.date).toISOString();
+  dateDiv.innerText = new Date(result.date).toLocaleString();
   infoDiv.innerHTML = tableify(result.content);
 });
 }
