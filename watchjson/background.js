@@ -33,6 +33,8 @@ chrome.storage.onChanged.addListener(async function (changes, namespace) {
         if (key === 'results') {
             var results = changes[key].newValue;
             var length = results.length;
+            chrome.browserAction.setTitle({title:`Watching ${results.length} urls\n`+
+                results.map(r=>r.badge+'').join('\n')});
             var date = Number(new Date());
             var i = 0;
             var optionsObj = await getOptions();
