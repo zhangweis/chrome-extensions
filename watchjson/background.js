@@ -33,7 +33,8 @@ chrome.storage.onChanged.addListener(async function (changes, namespace) {
         if (key === 'results') {
             var results = changes[key].newValue;
             var length = results.length;
-            chrome.browserAction.setTitle({title:`Watching ${results.length} urls\n`+
+            var dateString = new Date().toLocaleTimeString();
+            chrome.browserAction.setTitle({title:`Date: ${dateString}\nWatching ${results.length} urls\n`+
                 results.map(r=>r.badge+'').join('\n')});
             var date = Number(new Date());
             var i = 0;
