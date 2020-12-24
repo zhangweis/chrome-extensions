@@ -56,9 +56,15 @@ async function loadJson() {
     var result = await Promise.all(optionsObj.fetches.map(async (fetchOption) => {
         const { urls, jq: jqPath } = fetchOption;
         var json = await Promise.all(urls.map(async (urlToGo) => {
-            urlToGo = urlToGo.replaceAll('${timestamp}', Number(new Date()));
-            console.log('fetching ' + urlToGo);
-            var json = await (await fetch(urlToGo)).json();
+            if ((typeof urlToGo) == 'string') urlToGo = {url:urlToGo,method:'get'};
+            urlToGo.url = urlToGo.url.replaceAll('${timestamp}', Number(new Date()));
+            console.log('fetching ', urlToGo);
+            if (typeof(urlToGo.body)=='object') {
+                urlToGo.method = "post";
+                urlToGo.body = JSON.stringify(urlToGo.body);
+                urlToGo.headers=Object.assign({},urlToGo.headers, {"Content-Type":"application/json"});
+            }
+            var json = await (await fetch(urlToGo.url, urlToGo)).json();
             return json;
         }));
         var result = await callJq(json, jqPath);
