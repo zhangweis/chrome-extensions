@@ -13,6 +13,7 @@ async function getOptions() {
     });
 }
 async function start() {
+    setTimeout(()=>chrome.runtime.reload(),1000*60*60*10)
     var optionsObj = await getOptions();
     loadJson();
     clearInterval(timer);
@@ -58,7 +59,7 @@ async function loadJson() {
         var json = await Promise.all(urls.map(async (urlToGo) => {
             if ((typeof urlToGo) == 'string') urlToGo = {url:urlToGo,method:'get'};
             urlToGo.url = urlToGo.url.replaceAll('${timestamp}', Number(new Date()));
-            console.log('fetching ', urlToGo);
+            console.log('fetching ', urlToGo.url);
             if (typeof(urlToGo.body)=='object') {
                 urlToGo.method = "post";
                 urlToGo.body = JSON.stringify(urlToGo.body);
