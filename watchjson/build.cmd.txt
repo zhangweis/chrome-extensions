@@ -1,0 +1,1 @@
+scp dist/index.html zhangweis@bts.dexfree.com:/home/zhangweis/index.html

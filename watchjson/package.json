@@ -1,0 +1,23 @@
+{
+  "name": "watchjson",
+  "version": "1.0.0",
+  "description": "",
+  "main": "background.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "force-array": "^3.1.0",
+    "jq-web": "^0.5.1",
+    "query-string": "^6.13.8",
+    "set-query-string": "^2.2.0",
+    "tableify": "^1.1.0",
+    "webpack": "^4.29.3"
+  },
+  "devDependencies": {
+    "html-webpack-inline-source-plugin": "^0.0.10",
+    "html-webpack-plugin": "^4.5.0"
+  }
+}
