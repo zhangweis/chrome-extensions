@@ -39,8 +39,14 @@ export default {
   },
   data() {
     const parsed = queryString.parse(location.search);
-    let source =
-      parsed.source ||
+    var source;
+    try {
+      source = parsed.source&&atob(parsed.source);
+    }catch(e) {
+      alert(e)
+      source = null;
+    }
+    source = source ||
       `{
 "urls":
 [{url:"https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2",body:
@@ -63,8 +69,8 @@ export default {
   methods: {
     async handleIt() {
       const parsed = queryString.parse(location.search);
-      if (parsed.source != this.source) {
-        setQuery({ source: this.source });
+      if (parsed.source != btoa(this.source)) {
+        setQuery({ source: btoa(this.source) });
       }
       this.curlAndJq();
     },
