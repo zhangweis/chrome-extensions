@@ -1,1 +1,2 @@
 scp dist/index.html zhangweis@bts.dexfree.com:/home/zhangweis/index.html
+sudo cp ~/index.html /var/www/html/curl-jq/
