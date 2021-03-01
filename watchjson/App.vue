@@ -108,7 +108,7 @@ export default {
         this.content = result.content;
         this.contentHtml = tableify(result.content);
         console.log(result);
-        document.title = [this.title|oldTitle, this.badge.join(' | ')].filter(e=>e).join(" - ");
+        document.title = [this.title||oldTitle, this.badge.join(' | ')].filter(e=>e).join(" - ");
         return result;
       } catch (e) {
         alert(e + "");
