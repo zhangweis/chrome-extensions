@@ -60,6 +60,7 @@ export default {
       showText:false,
       loading: false,
       badge: "",
+      title:"",
       content: {},
       contentHtml: "",
       source,
@@ -103,10 +104,11 @@ export default {
         );
         var result = await callJq(json, jqPath);
         this.badge = forceArray(result.badge);
+        this.title = result.title;
         this.content = result.content;
         this.contentHtml = tableify(result.content);
         console.log(result);
-        document.title = oldTitle + " - " + this.badge.join(' | ');
+        document.title = [oldTitle, this.title, this.badge.join(' | ')].filter(e=>e).join(" - ");
         return result;
       } catch (e) {
         alert(e + "");
