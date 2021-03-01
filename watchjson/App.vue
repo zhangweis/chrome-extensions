@@ -5,14 +5,15 @@
       :is-full-page="true"
     ></loading>
 
-    <h1>Curl And JQ!</h1>
+    <h1 @click="showText=!showText">Curl And JQ!</h1>
     <div>
       <h2><span v-for="item in badge" :key='item'>{{ item }}</span></h2>
     </div>
     <div v-html="contentHtml"></div>
     <button style='font-size:2em' @click="handleIt">Curl And JQ</button>
     <br />
-    <textarea v-model="source" cols="80" rows="20"> </textarea>
+
+    <textarea v-model="source" cols="80" rows="20" v-show="showText"> </textarea>
   </div>
 </template>
 <style scoped>
@@ -56,6 +57,7 @@ export default {
 ".[0].data.pairs[0]|{supply:.totalSupply,base:.reserve1,quote:.reserve0}|with_entries(.value|=tonumber)|0.001677940193653965 as $s|.price=.base/.quote|.mine=(. as $parent|{quote,base}|with_entries(.value|=./$parent.supply*$s)|.share=$s/$parent.supply|.price=(1/$parent.price)|.k=.quote*.base|.future=((.k*600)|sqrt))|.mine|{badge:[(.price|tostring|.[:5]),(.future|tostring|.[:7])],content:.}"
 }`;
     return {
+      showText:false,
       loading: false,
       badge: "",
       content: {},
