@@ -5,15 +5,23 @@
       :is-full-page="true"
     ></loading>
 
-    <h1 @click="showText=!showText">Curl And JQ!</h1>
+    <h1>Curl And JQ!</h1> 
     <div>
       <h2><span v-for="item in badge" :key='item'>{{ item }}</span></h2>
     </div>
     <div v-html="contentHtml"></div>
+    <div style='
+    width: 20em;
+    display: flex;
+    align-items:flex-end;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-content:space-between'>
     <button style='font-size:2em' @click="handleIt">Curl And JQ</button>
-    <br />
-
-    <textarea v-model="source" cols="80" rows="20" v-show="showText"> </textarea>
+    <div @click="showText=!showText">Script <span v-if='showText'>^</span><span v-else>V</span>
+    </div>
+    </div>
+    <textarea style='' v-model="source" cols="80" rows="20" v-show="showText"> </textarea>
   </div>
 </template>
 <style scoped>
