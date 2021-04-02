@@ -94,7 +94,7 @@ export default {
           urls.map(async (urlToGo) => {
             if (typeof urlToGo == "string")
               urlToGo = { url: urlToGo, method: "get" };
-            urlToGo.url = urlToGo.url.replaceAll(
+            urlToGo.url = (urlToGo.url||'').replaceAll(
               "${timestamp}",
               Number(new Date())
             );
@@ -106,7 +106,7 @@ export default {
                 "Content-Type": "application/json",
               });
             }
-            var json = await (await fetch(urlToGo.url, urlToGo)).json();
+            var json = urlToGo.data||(await (await fetch(urlToGo.url, urlToGo)).json());
             return json;
           })
         );
