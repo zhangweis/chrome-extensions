@@ -90,7 +90,9 @@ export default {
       try {
         let fetchOption = await callJq({}, this.source);
         if (fetchOption.from) {
-          fetchOption = await callJq({}, await (await fetch(fetchOption.from)).text());
+          fetchOption = await callJq({}, await (await fetch(fetchOption.from.replaceAll(
+              "${timestamp}",
+              Number(new Date())))).text());
         }
         const { urls, jq: jqPath } = fetchOption;
         var json = await Promise.all(
