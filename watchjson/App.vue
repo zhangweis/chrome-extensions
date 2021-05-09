@@ -89,6 +89,9 @@ export default {
       this.loading = true;
       try {
         let fetchOption = await callJq({}, this.source);
+        if (fetchOption.from) {
+          fetchOption = await callJq({}, await (await fetch(fetchOption.from)).text());
+        }
         const { urls, jq: jqPath } = fetchOption;
         var json = await Promise.all(
           urls.map(async (urlToGo) => {
