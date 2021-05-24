@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id='main'>
     <loading
       :active.sync="loading"
       :is-full-page="true"
@@ -25,6 +25,16 @@
   </div>
 </template>
 <style scoped>
+  div#main {
+    font-size:3em
+  }
+
+@media (min-width:1000px)  {
+  div#main {
+    font-size:1.5em
+  }
+}
+
 h2 span:not(:first-child):before {
     content:" | ";
 }
@@ -91,7 +101,7 @@ export default {
         let fetchOption = await callJq({}, this.source);
         if (fetchOption.from) {
           fetchOption = await callJq({}, await (await fetch(fetchOption.from.replaceAll(
-              "${timestamp}",
+              /\${timestamp}/g,
               Number(new Date())))).text());
         }
         const { urls, jq: jqPath } = fetchOption;
