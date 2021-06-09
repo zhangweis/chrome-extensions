@@ -104,7 +104,9 @@ export default {
               /\${timestamp}/g,
               Number(new Date())))).text());
         }
-        const { urls, jq: jqPath } = fetchOption;
+        const { imports=[],urls, jq: jqPath1 } = fetchOption;
+        var importText = await Promise.all(imports.map(async (url)=>{return await (await fetch(url)).text()}));
+        var jqPath = importText.join("")+jqPath1;
         var json = await Promise.all(
           urls.map(async (urlToGo) => {
             if (typeof urlToGo == "string")
