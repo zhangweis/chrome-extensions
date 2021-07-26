@@ -1,5 +1,6 @@
 <template>
   <div id='main'>
+    <div v-html='style'></div>
     <loading
       :active.sync="loading"
       :is-full-page="true"
@@ -82,6 +83,7 @@ export default {
       content: {},
       contentHtml: "",
       source,
+      style:'',
     };
   },
   async created() {
@@ -104,7 +106,11 @@ export default {
               /\${timestamp}/g,
               Number(new Date())))).text());
         }
-        const { imports=[],urls, jq: jqPath1 } = fetchOption;
+        const { styles=[],imports=[],urls, jq: jqPath1 } = fetchOption;
+        this.style=styles.map(s=>
+        s.content?`<style>${s.content}</stye>`:
+        `<link rel="stylesheet" href="${s.link}">`
+        ).join('');
         var importText = await Promise.all(imports.map(async (url)=>{return await (await fetch(url)).text()}));
         var jqPath = importText.join("")+jqPath1;
         var json = await Promise.all(
