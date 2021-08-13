@@ -23,6 +23,8 @@
     </div>
     </div>
     <textarea style='' v-model="source" cols="80" rows="20" v-show="showText"> </textarea>
+    <div v-html="fetchOptionHtml" v-show="showText">
+    </div>
   </div>
 </template>
 <style scoped>
@@ -45,6 +47,7 @@ import * as queryString from "query-string";
 import * as jq from "jq-web";
 import * as tableify from "tableify";
 import * as setQuery from "set-query-string";
+import * as linkify from "html-linkify";
 import Loading from "vue-loading-overlay";
 import * as forceArray from "force-array";
 import "vue-loading-overlay/dist/vue-loading.css";
@@ -82,6 +85,7 @@ export default {
       title:"",
       content: {},
       contentHtml: "",
+      fetchOptionHtml:"",
       source,
       style:'',
     };
@@ -138,6 +142,7 @@ export default {
         this.title = result.title;
         this.content = result.content;
         this.contentHtml = tableify(result.content);
+        this.fetchOptionHtml = linkify(tableify(fetchOption),{escape:false});
         console.log(result);
         document.title = [this.title||oldTitle, this.badge.join(' | ')].filter(e=>e).join(" - ");
         return result;

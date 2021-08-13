@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "force-array": "^3.1.0",
+    "html-linkify": "^1.2.2",
     "jq-web": "^0.5.1",
     "query-string": "^6.13.8",
     "set-query-string": "^2.2.0",
