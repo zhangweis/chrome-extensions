@@ -105,10 +105,12 @@ export default {
       this.loading = true;
       try {
         let fetchOption = await callJq({}, this.source);
+        let originFetchOption = {...fetchOption};
         if (fetchOption.from) {
           fetchOption = await callJq({}, await (await fetch(fetchOption.from.replaceAll(
               /\${timestamp}/g,
               Number(new Date())))).text());
+          originFetchOption = {...originFetchOption,...fetchOption};
         }
         const { styles=[],imports=[],urls, jq: jqPath1 } = fetchOption;
         this.style=styles.map(s=>
@@ -142,7 +144,7 @@ export default {
         this.title = result.title;
         this.content = result.content;
         this.contentHtml = tableify(result.content);
-        this.fetchOptionHtml = linkify(tableify(fetchOption),{escape:false});
+        this.fetchOptionHtml = linkify(tableify(originFetchOption),{escape:false});
         console.log(result);
         document.title = [this.title||oldTitle, this.badge.join(' | ')].filter(e=>e).join(" - ");
         return result;
