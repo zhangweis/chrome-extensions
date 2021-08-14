@@ -46,7 +46,8 @@ h2 span:not(:first-child):before {
 import * as queryString from "query-string";
 import * as jq from "jq-web";
 import * as tableify from "tableify";
-import * as setQuery from "set-query-string";
+// import * as setQuery from "set-query-string";
+import * as setLocationHash from 'set-location-hash';
 import * as linkify from "html-linkify";
 import Loading from "vue-loading-overlay";
 import * as forceArray from "force-array";
@@ -62,9 +63,10 @@ export default {
   },
   data() {
     const parsed = queryString.parse(location.search);
-    var source;
+    var encodedSource = parsed.source||location.hash.substring(1);
+    var source="";
     try {
-      source = parsed.source&&atob(parsed.source);
+      source = encodedSource&&atob(encodedSource);
     }catch(e) {
       alert(e)
       source = null;
@@ -95,9 +97,9 @@ export default {
   },
   methods: {
     async handleIt() {
-      const parsed = queryString.parse(location.search);
+      const parsed = location.hash.substring(1);
       if (parsed.source != btoa(this.source)) {
-        setQuery({ source: btoa(this.source) });
+        setLocationHash(btoa(this.source));
       }
       this.curlAndJq();
     },
