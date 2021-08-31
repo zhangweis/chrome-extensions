@@ -63,7 +63,7 @@ export default {
   },
   data() {
     const parsed = queryString.parse(location.search);
-    var encodedSource = parsed.source||location.hash.substring(1);
+    var encodedSource = unescape(parsed.source||location.hash.substring(1));
     var source="";
     try {
       source = encodedSource&&atob(encodedSource);
@@ -141,6 +141,7 @@ export default {
             return json;
           })
         );
+        console.log(json);
         var result = await callJq(json, jqPath);
         this.badge = forceArray(result.badge);
         this.title = result.title;
@@ -152,6 +153,7 @@ export default {
         return result;
       } catch (e) {
         alert(e + "");
+        console.trace(e);
       } finally {
         this.loading = false;
       }
