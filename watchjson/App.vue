@@ -1,45 +1,48 @@
 <template>
-  <div id='main'>
-    <div v-html='style'></div>
-    <loading
-      :active.sync="loading"
-      :is-full-page="true"
-    ></loading>
+  <div id="main">
+    <div v-html="style"></div>
+    <loading :active.sync="loading" :is-full-page="true"></loading>
 
-    <h1>Curl And JQ!</h1> 
+    <h1>Curl And JQ!</h1>
     <div>
-      <h2><span v-for="item in badge" :key='item'>{{ item }}</span></h2>
+      <h2>
+        <span v-for="item in badge" :key="item">{{ item }}</span>
+      </h2>
     </div>
     <div v-html="contentHtml"></div>
-    <div style='
-    width: 20em;
-    display: flex;
-    align-items:flex-end;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-content:space-between'>
-    <button style='font-size:2em' @click="handleIt">Curl And JQ</button>
-    <div @click="showText=!showText">Script <span v-if='showText'>^</span><span v-else>V</span>
+    <div
+      style="
+        width: 20em;
+        display: flex;
+        align-items: flex-end;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-content: space-between;
+      "
+    >
+      <button style="font-size: 2em" @click="handleIt">Curl And JQ</button>
+      <div @click="showText = !showText">
+        Script <span v-if="showText">^</span><span v-else>V</span>
+      </div>
     </div>
-    </div>
-    <textarea style='' v-model="source" cols="80" rows="20" v-show="showText"> </textarea>
-    <div v-html="fetchOptionHtml" v-show="showText">
-    </div>
+    <textarea style="" v-model="source" cols="80" rows="20" v-show="showText">
+    </textarea>
+    <div v-html="fetchOptionHtml" v-show="showText"></div>
   </div>
 </template>
 <style scoped>
-  div#main {
-    font-size:3em
-  }
+div#main {
+  font-size: 3em;
+}
 
-@media (min-width:1000px)  {
+@media (min-width: 1000px) {
   div#main {
-    font-size:1.5em
+    font-size: 1.5em;
   }
 }
 
 h2 span:not(:first-child):before {
-    content:" | ";
+  content: " | ";
 }
 </style>
 <script type='typescript'>
@@ -47,7 +50,7 @@ import * as queryString from "query-string";
 import * as jq from "jq-web";
 import * as tableify from "tableify";
 // import * as setQuery from "set-query-string";
-import * as setLocationHash from 'set-location-hash';
+import * as setLocationHash from "set-location-hash";
 import * as linkify from "html-linkify";
 import Loading from "vue-loading-overlay";
 import * as forceArray from "force-array";
@@ -59,19 +62,20 @@ async function callJq(json, filter) {
 var oldTitle = document.title;
 export default {
   components: {
-    Loading
+    Loading,
   },
   data() {
     const parsed = queryString.parse(location.search);
-    var encodedSource = unescape(parsed.source||location.hash.substring(1));
-    var source="";
+    var encodedSource = unescape(parsed.source || location.hash.substring(1));
+    var source = "";
     try {
-      source = encodedSource&&atob(encodedSource);
-    }catch(e) {
-      alert(e)
+      source = encodedSource && atob(encodedSource);
+    } catch (e) {
+      alert(e);
       source = null;
     }
-    source = source ||
+    source =
+      source ||
       `{
 "urls":
 [{url:"https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2",body:
@@ -81,15 +85,15 @@ export default {
 ".[0].data.pairs[0]|{supply:.totalSupply,base:.reserve1,quote:.reserve0}|with_entries(.value|=tonumber)|0.001677940193653965 as $s|.price=.base/.quote|.mine=(. as $parent|{quote,base}|with_entries(.value|=./$parent.supply*$s)|.share=$s/$parent.supply|.price=(1/$parent.price)|.k=.quote*.base|.future=((.k*600)|sqrt))|.mine|{badge:[(.price|tostring|.[:6]),(.future|tostring|.[:7])],content:.}"
 }`;
     return {
-      showText:false,
+      showText: false,
       loading: false,
       badge: "",
-      title:"",
+      title: "",
       content: {},
       contentHtml: "",
-      fetchOptionHtml:"",
+      fetchOptionHtml: "",
       source,
-      style:'',
+      style: "",
     };
   },
   async created() {
@@ -107,49 +111,49 @@ export default {
       this.loading = true;
       try {
         let fetchOption = await callJq({}, this.source);
-        let originFetchOption = {...fetchOption};
+        let originFetchOption = { ...fetchOption };
         if (fetchOption.from) {
-          fetchOption = await callJq({}, await (await fetch(fetchOption.from.replaceAll(
-              /\${timestamp}/g,
-              Number(new Date())))).text());
-          originFetchOption = {...originFetchOption,...fetchOption};
+          var froms = fetchOption.from;
+          if (!Array.isArray(froms)) froms = [froms];
+          var last = {};
+          var fetchOptions = [];
+          for (var from of froms) {
+            console.log({from,last})
+            var option = await callJq(
+                last,
+                await (
+                  await fetch(
+                    from.replaceAll(/\${timestamp}/g, Number(new Date()))
+                  )
+                ).text()
+              );
+              
+            fetchOptions.push(option);
+            last = await fetchAndJq(option, last);
+          }
+          originFetchOption = { ...originFetchOption, froms: fetchOptions };
         }
-        const { styles=[],imports=[],urls, jq: jqPath1 } = fetchOption;
-        this.style=styles.map(s=>
-        s.content?`<style>${s.content}</stye>`:
-        `<link rel="stylesheet" href="${s.link}">`
-        ).join('');
-        var importText = await Promise.all(imports.map(async (url)=>{return await (await fetch(url)).text()}));
-        var jqPath = importText.join("")+jqPath1;
-        var json = await Promise.all(
-          urls.map(async (urlToGo) => {
-            if (typeof urlToGo == "string")
-              urlToGo = { url: urlToGo, method: "get" };
-            urlToGo.url = (urlToGo.url||'').replaceAll(
-              "${timestamp}",
-              Number(new Date())
-            );
-            console.log("fetching ", urlToGo.url);
-            if (typeof urlToGo.body == "object") {
-              urlToGo.method = "post";
-              urlToGo.body = JSON.stringify(urlToGo.body);
-              urlToGo.headers = Object.assign({}, urlToGo.headers, {
-                "Content-Type": "application/json",
-              });
-            }
-            var json = urlToGo.data||(await (await fetch(urlToGo.url, urlToGo)).json());
-            return json;
-          })
-        );
-        console.log(json);
-        var result = await callJq(json, jqPath);
+        var result = last;
+        
+        var styles = [].concat.apply([],fetchOptions.map(({styles = []})=>styles));
+        this.style = styles
+          .map((s) =>
+            s.content
+              ? `<style>${s.content}</stye>`
+              : `<link rel="stylesheet" href="${s.link}">`
+          )
+          .join("");
         this.badge = forceArray(result.badge);
         this.title = result.title;
-        this.content = result.content;
-        this.contentHtml = tableify(result.content);
-        this.fetchOptionHtml = linkify(tableify(originFetchOption),{escape:false});
+        this.content = result.content||result;
+        this.contentHtml = tableify(this.content);
+        this.fetchOptionHtml = linkify(tableify(originFetchOption), {
+          escape: false,
+        });
         console.log(result);
-        document.title = [this.title||oldTitle, this.badge.join(' | ')].filter(e=>e).join(" - ");
+        document.title = [this.title || oldTitle, this.badge.join(" | ")]
+          .filter((e) => e)
+          .join(" - ");
         return result;
       } catch (e) {
         alert(e + "");
@@ -160,4 +164,37 @@ export default {
     },
   },
 };
+
+async function fetchAndJq(fetchOption) {
+  const { imports = [], urls, jq: jqPath1 } = fetchOption;
+  var importText = await Promise.all(
+    imports.map(async (url) => {
+      return await (await fetch(url)).text();
+    })
+  );
+  var jqPath = importText.join("") + jqPath1;
+  var json = await Promise.all(
+    urls.map(async (urlToGo) => {
+      if (typeof urlToGo == "string") urlToGo = { url: urlToGo, method: "get" };
+      urlToGo.url = (urlToGo.url || "").replaceAll(
+        "${timestamp}",
+        Number(new Date())
+      );
+      console.log("fetching ", urlToGo.url);
+      if (typeof urlToGo.body == "object") {
+        urlToGo.method = "post";
+        urlToGo.body = JSON.stringify(urlToGo.body);
+        urlToGo.headers = Object.assign({}, urlToGo.headers, {
+          "Content-Type": "application/json",
+        });
+      }
+      var json =
+        urlToGo.data || (await (await fetch(urlToGo.url, urlToGo)).json());
+      return json;
+    })
+  );
+  console.log(json);
+  var result = await callJq(json, jqPath);
+  return result;
+}
 </script>
