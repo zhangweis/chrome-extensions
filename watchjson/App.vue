@@ -112,11 +112,12 @@ export default {
       try {
         let fetchOption = await callJq({}, this.source);
         let originFetchOption = { ...fetchOption };
+        var fetchOptions = [fetchOption];
+          var last = {};
         if (fetchOption.from) {
           var froms = fetchOption.from;
           if (!Array.isArray(froms)) froms = [froms];
-          var last = {};
-          var fetchOptions = [];
+          fetchOptions = [];
           for (var from of froms) {
             console.log({from,last})
             var option = await callJq(
@@ -132,6 +133,8 @@ export default {
             last = await fetchAndJq(option, last);
           }
           originFetchOption = { ...originFetchOption, froms: fetchOptions };
+        } else {
+          last = await fetchAndJq(fetchOption, last);
         }
         var result = last;
         
