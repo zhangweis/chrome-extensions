@@ -119,7 +119,6 @@ export default {
           if (!Array.isArray(froms)) froms = [froms];
           fetchOptions = [];
           for (var from of froms) {
-            console.log({from,last})
             var option = await callJq(
                 last,
                 await (
@@ -170,6 +169,7 @@ export default {
 
 async function fetchAndJq(fetchOption) {
   const { imports = [], urls, jq: jqPath1 } = fetchOption;
+  if (!urls) return fetchOption;
   var importText = await Promise.all(
     imports.map(async (url) => {
       return await (await fetch(url)).text();
