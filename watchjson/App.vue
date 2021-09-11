@@ -114,6 +114,17 @@ export default {
         let originFetchOption = { ...fetchOption };
         var fetchOptions = [fetchOption];
           var last = {};
+        var configs = await Promise.all((fetchOption.config||[]).map(async (from)=>{
+          var option = await callJq(
+                last,
+                await (
+                  await fetchUrl(from)
+                ).text()
+              );
+              
+            return await fetchAndJq(option);
+        }));
+        last = await callJq(configs,fetchOption.configJq||'.');
         if (fetchOption.from) {
           var froms = fetchOption.from;
           if (!Array.isArray(froms)) froms = [froms];
@@ -122,9 +133,7 @@ export default {
             var option = await callJq(
                 last,
                 await (
-                  await fetch(
-                    from.replaceAll(/\${timestamp}/g, Number(new Date()))
-                  )
+                  await fetchUrl(from)
                 ).text()
               );
               
@@ -166,6 +175,12 @@ export default {
     },
   },
 };
+
+async function fetchUrl(from) {
+  return await fetch(
+    from.replaceAll(/\${timestamp}/g, Number(new Date()))
+  );
+}
 
 async function fetchAndJq(fetchOption) {
   const { imports = [], urls, jq: jqPath1 } = fetchOption;
