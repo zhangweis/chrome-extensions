@@ -8,6 +8,9 @@ hungryFetch.mockResponse('http://good.com/', {
 });
 
 describe('Array', function() {
+  beforeEach(() => {
+    hungryFetch.clear();
+   });
   describe('pureData', function() {
     it('pureData', async function() {
       var {result:resp} = await fetchAndJq({
@@ -99,14 +102,6 @@ describe('Array', function() {
       assert.deepStrictEqual(result,[{pure:1}]);
     });
     it('supports multiple', async function() {
-      hungryFetch.mockResponse('config', `{
-        urls:[{data:{pure:1}}],jq:".[0]"
-      }
-      `);
-      hungryFetch.mockResponse('from1', `{
-        urls:[{data:.}]
-      }
-      `);
       var {result} = await parseFetchAndJq(`
       {urls:[{data:"data"}]}
       >>>
@@ -114,6 +109,26 @@ describe('Array', function() {
       {
         urls:[{data:.}]
       }
+      `
+      );
+      assert.deepStrictEqual(result,["data"]);
+    });
+    it('from multiple', async function() {
+      hungryFetch.mockResponse('from1', `{
+        urls:[{data:.}]
+      }
+      `);
+      hungryFetch.mockResponse('from0', `
+      {urls:[{data:"data"}]}
+      >>>
+      .[0]|
+      {
+        urls:[{data:.}]
+      }
+      `);
+
+      var {result} = await parseFetchAndJq(`
+      {from:"from0"}
       `
       );
       assert.deepStrictEqual(result,["data"]);

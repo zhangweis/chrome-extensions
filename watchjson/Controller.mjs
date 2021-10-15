@@ -79,7 +79,7 @@ async function fetchUrl(from) {
     var fetches;
     if (fetchOption.from) {
       var content = await fetchText(fetchOption.from)
-      const {originFetchOption:options,result,fetches:fetches1} = await parseFetchAndJqSingle(content,configResults);
+      const {originFetchOption:options,result,fetches:fetches1} = await parseFetchAndJq(content,configResults);
       fetches = fetches1;
       finalResult = result;
       originFetchOption = { ...originFetchOption, froms: options };
