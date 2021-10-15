@@ -109,7 +109,7 @@ describe('Array', function() {
       `);
       var {result} = await parseFetchAndJq(`
       {urls:[{data:"data"}]}
-      >>
+      >>>
       .[0]|
       {
         urls:[{data:.}]

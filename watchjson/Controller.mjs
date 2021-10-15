@@ -53,7 +53,7 @@ async function fetchUrl(from) {
     return {options, ...(await fetchAndJq(JSON.parse(JSON.stringify(options))))};
   }
   async function parseFetchAndJq(filter,on={}) {
-    const filters = filter.split('>>');
+    const filters = filter.split('>>>');
     // const filters = [filter];
     var last = {result:on};
     for (var filter of filters) {
