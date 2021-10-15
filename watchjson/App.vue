@@ -47,7 +47,7 @@ h2 span:not(:first-child):before {
 </style>
 <script type='typescript'>
 import * as queryString from "query-string";
-import * as jq from "jq-web";
+import {parseFetchAndJq} from "./Controller";
 import * as tableify from "tableify";
 // import * as setQuery from "set-query-string";
 import * as setLocationHash from "set-location-hash";
@@ -56,9 +56,6 @@ import Loading from "vue-loading-overlay";
 import * as forceArray from "force-array";
 import "vue-loading-overlay/dist/vue-loading.css";
 
-async function callJq(json, filter) {
-  return await jq.promised.json(json, filter);
-}
 var oldTitle = document.title;
 export default {
   components: {
@@ -110,42 +107,7 @@ export default {
     async curlAndJq() {
       this.loading = true;
       try {
-        let fetchOption = await callJq({}, this.source);
-        let originFetchOption = { ...fetchOption };
-        var fetchOptions = [fetchOption];
-          var last = {};
-        var configs = await Promise.all((fetchOption.config||[]).map(async (from)=>{
-          var option = await callJq(
-                last,
-                await (
-                  await fetchUrl(from)
-                ).text()
-              );
-              
-            return await fetchAndJq(option);
-        }));
-        last = await callJq(configs,fetchOption.configJq||'.');
-        if (fetchOption.from) {
-          var froms = fetchOption.from;
-          if (!Array.isArray(froms)) froms = [froms];
-          fetchOptions = [];
-          for (var from of froms) {
-            var option = await callJq(
-                last,
-                await (
-                  await fetchUrl(from)
-                ).text()
-              );
-              
-            fetchOptions.push(option);
-            last = await fetchAndJq(option, last);
-          }
-          originFetchOption = { ...originFetchOption, froms: fetchOptions };
-        } else {
-          last = await fetchAndJq(fetchOption, last);
-        }
-        var result = last;
-        
+        var {result, fetches, fetchOptions, originFetchOption} = await parseFetchAndJq(this.source);
         var styles = [].concat.apply([],fetchOptions.map(({styles = []})=>styles));
         this.style = styles
           .map((s) =>
@@ -161,7 +123,7 @@ export default {
         this.fetchOptionHtml = linkify(tableify(originFetchOption), {
           escape: false,
         });
-        console.log(result);
+        console.log({result,fetches,originFetchOption});
         document.title = [this.title || oldTitle, this.badge.join(" | ")]
           .filter((e) => e)
           .join(" - ");
@@ -176,43 +138,4 @@ export default {
   },
 };
 
-async function fetchUrl(from) {
-  return await fetch(
-    from.replaceAll(/\${timestamp}/g, Number(new Date()))
-  );
-}
-
-async function fetchAndJq(fetchOption) {
-  const { imports = [], urls, jq: jqPath1 } = fetchOption;
-  if (!urls) return fetchOption;
-  var importText = await Promise.all(
-    imports.map(async (url) => {
-      return await (await fetch(url)).text();
-    })
-  );
-  var jqPath = importText.join("") + jqPath1;
-  var json = await Promise.all(
-    urls.map(async (urlToGo) => {
-      if (typeof urlToGo == "string") urlToGo = { url: urlToGo, method: "get" };
-      urlToGo.url = (urlToGo.url || "").replaceAll(
-        "${timestamp}",
-        Number(new Date())
-      );
-      console.log("fetching ", urlToGo.url);
-      if (typeof urlToGo.body == "object") {
-        urlToGo.method = "post";
-        urlToGo.body = JSON.stringify(urlToGo.body);
-        urlToGo.headers = Object.assign({}, urlToGo.headers, {
-          "Content-Type": "application/json",
-        });
-      }
-      var json =
-        urlToGo.data || (await (await fetch(urlToGo.url, urlToGo)).json());
-      return json;
-    })
-  );
-  console.log(json);
-  var result = await callJq(json, jqPath);
-  return result;
-}
 </script>
