@@ -39,29 +39,33 @@ async function fetchUrl(from) {
     var result = await callJq(json, jqPath);
     return {fetches:json,result};
   }
-  async function fetchText(url) {
+  async function fetchText(url, {baseUrl}) {
+    if (baseUrl) {
+      url = new URL(url, baseUrl).href;
+    }
+
     const content = await (await fetchUrl(url)).text();
-    return content;
+    return {content,url};
   }
-  async function parseAndFetch(filter,on={}) {
+  async function parseAndFetch(filter,on={},context={}) {
     var options = await callJq(on, filter);
     if (options.from) {
-      const content = await fetchText(options.from);
-      const ret = await parseAndFetch(content,on);
+      const {content,url} = await fetchText(options.from,{});
+      const ret = await parseAndFetch(content,on,{baseUrl:url});
       return ret;
     }
     return {options, ...(await fetchAndJq(JSON.parse(JSON.stringify(options))))};
   }
-  async function parseFetchAndJq(filter,on={}) {
+  async function parseFetchAndJq(filter,context={},on={}) {
     const filters = filter.split('>>>');
     // const filters = [filter];
     var last = {result:on};
     for (var filter of filters) {
-      last = await parseFetchAndJqSingle(filter,last.result);
+      last = await parseFetchAndJqSingle(filter,context,last.result);
     }
     return last;
   }
-  async function parseFetchAndJqSingle(filter,on) {
+  async function parseFetchAndJqSingle(filter,context,on) {
     let fetchOption = await callJq(on, filter);
     let originFetchOption = { ...fetchOption };
     var fetchOptions = [fetchOption];
@@ -69,7 +73,7 @@ async function fetchUrl(from) {
     var configs = await Promise.all((fetchOption.config||[]).map(async (from)=>{
       var option = await callJq(
             {},
-              await fetchText(from)
+              (await fetchText(from, context)).content
           );
           
         return (await fetchAndJq(option)).result;
@@ -78,8 +82,8 @@ async function fetchUrl(from) {
     var finalResult;
     var fetches;
     if (fetchOption.from) {
-      var content = await fetchText(fetchOption.from)
-      const {originFetchOption:options,result,fetches:fetches1} = await parseFetchAndJq(content,configResults);
+      var {url,content} = await fetchText(fetchOption.from, context)
+      const {originFetchOption:options,result,fetches:fetches1} = await parseFetchAndJq(content,{...context,baseUrl:url},configResults);
       fetches = fetches1;
       finalResult = result;
       originFetchOption = { ...originFetchOption, froms: options };

@@ -81,23 +81,23 @@ describe('Array', function() {
       assert.deepStrictEqual(result,[{pure:1}]);
     });
     it('from content contains configs', async function() {
-      hungryFetch.mockResponse('config', `{
+      hungryFetch.mockResponse('http://site/config', `{
         urls:[{data:{pure:1}}],jq:".[0]"
       }
       `);
-      hungryFetch.mockResponse('from0', `{
-        config:["config"],configJq:".[0]",
-        from:"from1"
+      hungryFetch.mockResponse('http://site/from0', `{
+        config:["./config"],configJq:".[0]",
+        from:"./from1"
       }
       `);
-      hungryFetch.mockResponse('from1', `{
+      hungryFetch.mockResponse('http://site/from1', `{
         urls:[{data:.}]
       }
       `);
       var {result} = await parseFetchAndJq(`{
-        from:"from0"
+        from:"/from0"
       }
-      `
+      `,{baseUrl:'http://site/'}
       );
       assert.deepStrictEqual(result,[{pure:1}]);
     });
@@ -110,6 +110,36 @@ describe('Array', function() {
         urls:[{data:.}]
       }
       `
+      );
+      assert.deepStrictEqual(result,["data"]);
+    });
+    it('multiple supports from', async function() {
+      hungryFetch.mockResponse('from0', `
+      {urls:[{data:"data"}]}
+      `);
+      var {result} = await parseFetchAndJq(`
+      {from:"from0"}
+      >>>
+      .[0]|
+      {
+        urls:[{data:.}]
+      }
+      `
+      );
+      assert.deepStrictEqual(result,["data"]);
+    });
+    it('multiple from supports relative url', async function() {
+      hungryFetch.mockResponse('http://site/one/from0', `
+      {urls:[{data:"data"}]}
+      `);
+      var {result} = await parseFetchAndJq(`
+      {from:"../from0"}
+      >>>
+      .[0]|
+      {
+        urls:[{data:.}]
+      }
+      `,{baseUrl:'http://site/one/two/abc.jq.txt'}
       );
       assert.deepStrictEqual(result,["data"]);
     });
