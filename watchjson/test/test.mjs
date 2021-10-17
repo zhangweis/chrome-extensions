@@ -80,7 +80,7 @@ describe('Array', function() {
       );
       assert.deepStrictEqual(result,[{pure:1}]);
     });
-    it('from content contains configs', async function() {
+    it('from content contains relative configs', async function() {
       hungryFetch.mockResponse('http://site/config', `{
         urls:[{data:{pure:1}}],jq:".[0]"
       }

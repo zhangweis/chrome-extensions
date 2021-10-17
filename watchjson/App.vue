@@ -3,7 +3,7 @@
     <div v-html="style"></div>
     <loading :active.sync="loading" :is-full-page="true"></loading>
 
-    <h1>Curl And JQ!</h1>
+    <h1>Curl And JQ!{{ title&&(" - " + title) }}</h1>
     <div>
       <h2>
         <span v-for="item in badge" :key="item">{{ item }}</span>
