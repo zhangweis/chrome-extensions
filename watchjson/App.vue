@@ -105,6 +105,7 @@ export default {
       this.curlAndJq();
     },
     async curlAndJq() {
+      clearTimeout(this.timeout);
       this.loading = true;
       try {
         var {result, fetches, fetchOptions, originFetchOption} = await parseFetchAndJq(this.source);
@@ -123,6 +124,9 @@ export default {
         this.fetchOptionHtml = linkify(tableify(originFetchOption), {
           escape: false,
         });
+        if (originFetchOption.refresh) {
+          this.timeout = setTimeout(()=>this.curlAndJq(),1000*originFetchOption.refresh);
+        }
         console.log({result,fetches,originFetchOption});
         document.title = [this.title || oldTitle, this.badge.join(" | ")]
           .filter((e) => e)
