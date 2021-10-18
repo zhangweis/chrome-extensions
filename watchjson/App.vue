@@ -124,18 +124,20 @@ export default {
         this.fetchOptionHtml = linkify(tableify(originFetchOption), {
           escape: false,
         });
-        if (originFetchOption.refresh) {
-          this.timeout = setTimeout(()=>this.curlAndJq(),1000*originFetchOption.refresh);
-        }
+        this.originFetchOption=originFetchOption;
         console.log({result,fetches,originFetchOption});
         document.title = [this.title || oldTitle, this.badge.join(" | ")]
           .filter((e) => e)
           .join(" - ");
         return result;
       } catch (e) {
-        alert(e + "");
         console.trace(e);
+        alert(e.stack||e);
       } finally {
+        var refresh=(this.originFetchOption||{}).refresh;
+        if (refresh) {
+          this.timeout = setTimeout(()=>this.curlAndJq(),1000*refresh);
+        }
         this.loading = false;
       }
     },
