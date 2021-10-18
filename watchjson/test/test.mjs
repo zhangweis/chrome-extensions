@@ -34,6 +34,23 @@ describe('Array', function() {
       );
       assert.deepStrictEqual([{pure:1}], result);
     });
+    it('error contains fetches when jq fails', async function() {
+      hungryFetch.mockResponse('from', `{
+        "data":"data"
+      }
+      `);
+      try {
+      var {options,result} = await parseAndFetch(`{
+        urls:[{url:"from"}],
+        jq:"error"
+      }
+      `
+      );
+      assert.fail("should fail as jq is error");
+      }catch(e){
+        assert.deepStrictEqual(e.fetches, [{data:"data"}]);
+      }
+    });
    it('parseAndFetch supports from', async function() {
       hungryFetch.mockResponse('from', `{
         urls:[{data:{pure:1}}]
