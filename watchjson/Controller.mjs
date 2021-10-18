@@ -36,7 +36,11 @@ async function fetchUrl(from) {
         return json;
       })
     );
+    try {
     var result = await callJq(json, jqPath);
+    } catch(e) {
+      throw {origin:e,fetches:json,toString:()=>e.toString()};
+    }
     return {fetches:json,result};
   }
   async function fetchText(url, {baseUrl}) {
