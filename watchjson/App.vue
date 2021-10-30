@@ -5,8 +5,9 @@
 
     <div>
       <h2>
-        <span v-for="item in badge" :key="item">{{ item }}</span>
-  -  {{ title&&(title+" - ") }} Curl And JQ!</h2>
+        {{ title&&(title+" - ") }}<span v-for="item in badge" :key="item">{{ item }}</span>
+  <span v-if="!badge">Curl And JQ!</span>
+      </h2>
     </div>
     <div v-html="contentHtml"></div>
     <div
@@ -26,7 +27,11 @@
     </div>
     <textarea style="" v-model="source" cols="80" rows="20" v-show="showText">
     </textarea>
-    <div v-html="fetchOptionHtml" v-show="showText"></div>
+    <div v-show="showText">
+      <div v-html="debugHtml"></div>
+      <hr/>
+      <div v-html="fetchOptionHtml" v-show="showText"></div>
+    </div>
   </div>
 </template>
 <style scoped>
@@ -88,6 +93,7 @@ export default {
       content: {},
       contentHtml: "",
       fetchOptionHtml: "",
+      debugHtml:"",
       source,
       style: "",
     };
@@ -123,6 +129,7 @@ export default {
         this.fetchOptionHtml = linkify(tableify(originFetchOption), {
           escape: false,
         });
+        this.debugHtml = tableify((result||{}).debug);
         this.originFetchOption=originFetchOption;
         console.log({result,fetches,originFetchOption});
         document.title = [this.title || oldTitle, this.badge.join(" | ")]
