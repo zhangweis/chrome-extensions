@@ -83,7 +83,7 @@ export default {
 {"variables":{"pair":"0xb4e16d0168e52d35cacd2c6185b44281ec28c9dc"},"query":"query pairs($pair: String!){pairs(first:5, where:{id:$pair}) {reserve0,reserve1,totalSupply}}"}
 }]
 ,"jq":
-".[0].data.pairs[0]|{supply:.totalSupply,base:.reserve1,quote:.reserve0}|with_entries(.value|=tonumber)|0.001677940193653965 as $s|.price=.base/.quote|.mine=(. as $parent|{quote,base}|with_entries(.value|=./$parent.supply*$s)|.share=$s/$parent.supply|.price=(1/$parent.price)|.k=.quote*.base|.future=((.k*600)|sqrt))|.mine|{badge:[(.price|tostring|.[:6]),(.future|tostring|.[:7])],content:.}"
+".[0].data.pairs[0]|{content:.}"
 }`;
     return {
       showText: false,
