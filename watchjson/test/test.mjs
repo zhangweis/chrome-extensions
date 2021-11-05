@@ -180,6 +180,28 @@ describe('Array', function() {
       );
       assert.deepStrictEqual(result,["data"]);
     });
+    it('multiple supports function', async function() {
+      var {result} = await parseFetchAndJq(`
+      {urls:[{data:{functions:"def abc:1;"}}],
+      jq:".[0]"}
+      >>>
+      {
+        urls:[{data:abc}]
+      }
+      `,{baseUrl:'http://site/one/two/abc.jq.txt'}
+      );
+      assert.deepStrictEqual(result,[1]);
+    });
+    it('supports text url', async function() {
+      hungryFetch.mockResponse('text.txt', `text`);
+      var {result} = await parseFetchAndJq(`
+      {
+        urls:[{url:"text.txt"}]
+      }
+      `,{baseUrl:'http://site/one/two/abc.jq.txt'}
+      );
+      assert.deepStrictEqual(result,["text"]);
+    });
 
   });
 });

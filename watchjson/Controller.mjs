@@ -32,7 +32,7 @@ async function fetchUrl(from) {
           });
         }
         var json =
-          urlToGo.data || (await (await fetch(urlToGo.url, urlToGo)).json());
+          urlToGo.data || (await fetchJson(urlToGo));
         return json;
       })
     );
@@ -43,6 +43,18 @@ async function fetchUrl(from) {
     }
     return {fetches:json,result};
   }
+  async function fetchJson(urlToGo) {
+    const fetched = await fetch(urlToGo.url, urlToGo);
+    const text = await fetched.text();
+    var jsonContent;
+    if (text[0]=='['||text[0]=='{') {
+      jsonContent = JSON.parse(text);
+    } else {
+      jsonContent = text;
+    }
+    return jsonContent;
+  }
+
   async function fetchText(url, {baseUrl}) {
     if (baseUrl) {
       url = new URL(url, baseUrl).href;
@@ -70,6 +82,7 @@ async function fetchUrl(from) {
     return last;
   }
   async function parseFetchAndJqSingle(filter,context,on) {
+    filter=(on.functions||"")+filter;
     let fetchOption = await callJq(on, filter);
     let originFetchOption = { ...fetchOption };
     var fetchOptions = [fetchOption];
