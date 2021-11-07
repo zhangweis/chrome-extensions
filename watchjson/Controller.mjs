@@ -7,7 +7,7 @@ async function fetchUrl(from) {
     );
   }
   
-  async function fetchAndJq(fetchOption) {
+  async function fetchAndJq(fetchOption,context) {
     const { imports = [], urls, jq: jqPath1="." } = fetchOption;
     if (!urls) return fetchOption;
     var importText = await Promise.all(
@@ -32,7 +32,7 @@ async function fetchUrl(from) {
           });
         }
         var json =
-          urlToGo.data || (await fetchJson(urlToGo));
+          urlToGo.data || (await fetchJson(urlToGo,context));
         return json;
       })
     );
@@ -43,8 +43,8 @@ async function fetchUrl(from) {
     }
     return {fetches:json,result};
   }
-  async function fetchJson(urlToGo) {
-    const fetched = await fetch(urlToGo.url, urlToGo);
+  async function fetchJson(urlToGo,context) {
+    const fetched = await fetch(getUrl(urlToGo.url,context), urlToGo);
     const text = await fetched.text();
     var jsonContent;
     if (text[0]=='['||text[0]=='{') {
@@ -54,11 +54,14 @@ async function fetchUrl(from) {
     }
     return jsonContent;
   }
-
-  async function fetchText(url, {baseUrl}) {
+  function getUrl(url,{baseUrl}={}){
     if (baseUrl) {
       url = new URL(url, baseUrl).href;
     }
+    return url;
+  }
+  async function fetchText(url, context) {
+    url = getUrl(url, context);
 
     const content = await (await fetchUrl(url)).text();
     return {content,url};
@@ -70,7 +73,7 @@ async function fetchUrl(from) {
       const ret = await parseAndFetch(content,on,{baseUrl:url});
       return ret;
     }
-    return {options, ...(await fetchAndJq(JSON.parse(JSON.stringify(options))))};
+    return {options, ...(await fetchAndJq(JSON.parse(JSON.stringify(options)), context))};
   }
   async function parseFetchAndJq(filter,context={},on={}) {
     const filters = filter.split('>>>');
@@ -93,7 +96,7 @@ async function fetchUrl(from) {
               (await fetchText(from, context)).content
           );
           
-        return (await fetchAndJq(option)).result;
+        return (await fetchAndJq(option, context)).result;
     }));
     var configResults = await callJq(configs,fetchOption.configJq||'.');
     var finalResult;
@@ -107,7 +110,7 @@ async function fetchUrl(from) {
     } else {
       // const {options,result} = await parseAndFetch(configResults, JSON.stringify(fetchOption));
       // finalResult = result;
-      var result = await fetchAndJq(fetchOption);
+      var result = await fetchAndJq(fetchOption, context);
       fetches = result.fetches;
       finalResult = result.result;
     }

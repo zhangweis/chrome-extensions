@@ -198,6 +198,16 @@ describe('Array', function() {
       {
         urls:[{url:"text.txt"}]
       }
+      `
+      );
+      assert.deepStrictEqual(result,["text"]);
+    });
+    it('supports relative url', async function() {
+      hungryFetch.mockResponse('http://site/one/two/text.txt', `text`);
+      var {result} = await parseFetchAndJq(`
+      {
+        urls:[{url:"./text.txt"}]
+      }
       `,{baseUrl:'http://site/one/two/abc.jq.txt'}
       );
       assert.deepStrictEqual(result,["text"]);
