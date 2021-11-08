@@ -80,44 +80,6 @@ describe('Array', function() {
       );
       assert.deepStrictEqual([{pure:1}], result);
     });
-    it('supports configs', async function() {
-      hungryFetch.mockResponse('config', `{
-        urls:[{data:{pure:1}}],jq:".[0]"
-      }
-      `);
-      hungryFetch.mockResponse('from1', `{
-        urls:[{data:.}]
-      }
-      `);
-      var {result} = await parseFetchAndJq(`{
-        config:["config"],configJq:".[0]",
-        from:"from1"
-      }
-      `
-      );
-      assert.deepStrictEqual(result,[{pure:1}]);
-    });
-    it('from content contains relative configs', async function() {
-      hungryFetch.mockResponse('http://site/config', `{
-        urls:[{data:{pure:1}}],jq:".[0]"
-      }
-      `);
-      hungryFetch.mockResponse('http://site/from0', `{
-        config:["./config"],configJq:".[0]",
-        from:"./from1"
-      }
-      `);
-      hungryFetch.mockResponse('http://site/from1', `{
-        urls:[{data:.}]
-      }
-      `);
-      var {result} = await parseFetchAndJq(`{
-        from:"/from0"
-      }
-      `,{baseUrl:'http://site/'}
-      );
-      assert.deepStrictEqual(result,[{pure:1}]);
-    });
     it('supports multiple', async function() {
       var {result} = await parseFetchAndJq(`
       {urls:[{data:"data"}]}
@@ -211,27 +173,6 @@ describe('Array', function() {
       `,{baseUrl:'http://site/one/two/abc.jq.txt'}
       );
       assert.deepStrictEqual(result,["text"]);
-    });
-    it('config supports relative url', async function() {
-      hungryFetch.mockResponse('http://site/one/data', `{
-        "data":"data"
-        }
-      `);
-      hungryFetch.mockResponse('http://site/one/config', `{
-        urls:[{url:"./data"}],jq:".[0]"
-      }
-      `);
-      hungryFetch.mockResponse('http://site/one/two/from1', `{
-        urls:[{data:.}]
-      }
-      `);
-      var {result} = await parseFetchAndJq(`{
-        config:["../config"],configJq:".[0]",
-        from:"from1"
-      }
-      `,{baseUrl:'http://site/one/two/abc.jq.txt'}
-      );
-      assert.deepStrictEqual(result,[{data:"data"}]);
     });
 
   });

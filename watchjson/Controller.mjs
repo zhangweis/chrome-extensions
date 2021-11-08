@@ -90,26 +90,15 @@ async function fetchUrl(from) {
     let originFetchOption = { ...fetchOption };
     var fetchOptions = [fetchOption];
       
-    var configs = await Promise.all((fetchOption.config||[]).map(async (from)=>{
-      var {content,url}=await fetchText(from, context);
-      var option = await callJq(
-            {},
-              content
-          );
-        return (await fetchAndJq(option, {...context,baseUrl:url})).result;
-    }));
-    var configResults = await callJq(configs,fetchOption.configJq||'.');
     var finalResult;
     var fetches;
     if (fetchOption.from) {
       var {url,content} = await fetchText(fetchOption.from, context)
-      const {originFetchOption:options,result,fetches:fetches1} = await parseFetchAndJq(content,{...context,baseUrl:url},configResults);
+      const {originFetchOption:options,result,fetches:fetches1} = await parseFetchAndJq(content,{...context,baseUrl:url});
       fetches = fetches1;
       finalResult = result;
       originFetchOption = { ...originFetchOption, froms: options };
     } else {
-      // const {options,result} = await parseAndFetch(configResults, JSON.stringify(fetchOption));
-      // finalResult = result;
       var result = await fetchAndJq(fetchOption, context);
       fetches = result.fetches;
       finalResult = result.result;
