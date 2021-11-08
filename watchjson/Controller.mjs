@@ -91,12 +91,12 @@ async function fetchUrl(from) {
     var fetchOptions = [fetchOption];
       
     var configs = await Promise.all((fetchOption.config||[]).map(async (from)=>{
+      var {content,url}=await fetchText(from, context);
       var option = await callJq(
             {},
-              (await fetchText(from, context)).content
+              content
           );
-          
-        return (await fetchAndJq(option, context)).result;
+        return (await fetchAndJq(option, {...context,baseUrl:url})).result;
     }));
     var configResults = await callJq(configs,fetchOption.configJq||'.');
     var finalResult;

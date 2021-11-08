@@ -212,6 +212,27 @@ describe('Array', function() {
       );
       assert.deepStrictEqual(result,["text"]);
     });
+    it('config supports relative url', async function() {
+      hungryFetch.mockResponse('http://site/one/data', `{
+        "data":"data"
+        }
+      `);
+      hungryFetch.mockResponse('http://site/one/config', `{
+        urls:[{url:"./data"}],jq:".[0]"
+      }
+      `);
+      hungryFetch.mockResponse('http://site/one/two/from1', `{
+        urls:[{data:.}]
+      }
+      `);
+      var {result} = await parseFetchAndJq(`{
+        config:["../config"],configJq:".[0]",
+        from:"from1"
+      }
+      `,{baseUrl:'http://site/one/two/abc.jq.txt'}
+      );
+      assert.deepStrictEqual(result,[{data:"data"}]);
+    });
 
   });
 });
