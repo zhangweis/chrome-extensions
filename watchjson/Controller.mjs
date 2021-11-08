@@ -1,28 +1,17 @@
 import jq from "jq-web";
-async function fetchUrl(from) {
-  var url = from;
-  if (Array.isArray(url)) url = url[0];
-    return await fetch(
-      url.replaceAll(/\${timestamp}/g, Number(new Date()))
-    );
-  }
-  
+ 
   async function fetchAndJq(fetchOption,context) {
     const { imports = [], urls, jq: jqPath1="." } = fetchOption;
     if (!urls) return fetchOption;
     var importText = await Promise.all(
       imports.map(async (url) => {
-        return await (await fetch(url)).text();
+        return await fetchText(url, context);
       })
     );
     var jqPath = importText.join("") + jqPath1;
     var json = await Promise.all(
       urls.map(async (urlToGo) => {
         if (typeof urlToGo == "string") urlToGo = { url: urlToGo, method: "get" };
-        urlToGo.url = (urlToGo.url || "").replaceAll(
-          "${timestamp}",
-          Number(new Date())
-        );
         // console.log("fetching ", urlToGo.url);
         if (typeof urlToGo.body == "object") {
           urlToGo.method = "post";
@@ -58,12 +47,12 @@ async function fetchUrl(from) {
     if (baseUrl) {
       url = new URL(url, baseUrl).href;
     }
-    return url;
+    return url.replaceAll(/\${(t|timestamp)}/g,Number(new Date()));
   }
   async function fetchText(url, context) {
     url = getUrl(url, context);
 
-    const content = await (await fetchUrl(url)).text();
+    const content = await (await fetch(url)).text();
     return {content,url};
   }
   async function parseAndFetch(filter,on={},context={}) {
@@ -110,4 +99,4 @@ async function fetchUrl(from) {
     return await jq.promised.json(json, filter);
   }
   
-export {fetchUrl, fetchAndJq, callJq,parseFetchAndJq, parseAndFetch}
+export {fetchAndJq, callJq,parseFetchAndJq, parseAndFetch}

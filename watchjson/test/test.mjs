@@ -1,7 +1,10 @@
 import assert from 'assert';
 import {fetchAndJq, parseFetchAndJq, parseAndFetch} from "../Controller.mjs";
 import hungryFetch from './hungry-fetch.js';
+import mockdate from 'mockdate'
+
 import {Response} from 'node-fetch';
+
 global.Response = Response;
 hungryFetch.mockResponse('http://good.com/', {
   data: 'some data'
@@ -123,10 +126,6 @@ describe('Array', function() {
       assert.deepStrictEqual(result,["data"]);
     });
     it('from multiple', async function() {
-      hungryFetch.mockResponse('from1', `{
-        urls:[{data:.}]
-      }
-      `);
       hungryFetch.mockResponse('from0', `
       {urls:[{data:"data"}]}
       >>>
@@ -150,7 +149,7 @@ describe('Array', function() {
       {
         urls:[{data:abc}]
       }
-      `,{baseUrl:'http://site/one/two/abc.jq.txt'}
+      `
       );
       assert.deepStrictEqual(result,[1]);
     });
@@ -169,6 +168,35 @@ describe('Array', function() {
       var {result} = await parseFetchAndJq(`
       {
         urls:[{url:"./text.txt"}]
+      }
+      `,{baseUrl:'http://site/one/two/abc.jq.txt'}
+      );
+      assert.deepStrictEqual(result,["text"]);
+    });
+  });
+  describe('timestamp', function() {
+  beforeEach(() => {
+    mockdate.set(new Date(1))
+  })
+  afterEach(() => {
+    mockdate.reset()
+  })
+
+    it('supports t_only', async function() {
+      hungryFetch.mockResponse('http://site/one/two/text.txt?t=1', `text`);
+      var {result} = await parseFetchAndJq(`
+      {
+        urls:[{url:"./text.txt?t=\${t}"}]
+      }
+      `,{baseUrl:'http://site/one/two/abc.jq.txt'}
+      );
+      assert.deepStrictEqual(result,["text"]);
+    });
+    it('supports timestamp', async function() {
+      hungryFetch.mockResponse('http://site/one/two/text.txt?t=1', `text`);
+      var {result} = await parseFetchAndJq(`
+      {
+        urls:[{url:"./text.txt?t=\${timestamp}"}]
       }
       `,{baseUrl:'http://site/one/two/abc.jq.txt'}
       );
