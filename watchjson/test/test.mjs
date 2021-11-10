@@ -1,5 +1,5 @@
 import assert from 'assert';
-import {fetchAndJq, parseFetchAndJq, parseAndFetch} from "../Controller.mjs";
+import {parseFetchAndJq} from "../Controller.mjs";
 import hungryFetch from './hungry-fetch.js';
 import mockdate from 'mockdate'
 
@@ -9,7 +9,9 @@ global.Response = Response;
 hungryFetch.mockResponse('http://good.com/', {
   data: 'some data'
 });
-
+async function fetchAndJq(o) {
+  return await parseFetchAndJq(JSON.stringify(o));
+}
 describe('Array', function() {
   beforeEach(() => {
     hungryFetch.clear();
@@ -29,8 +31,8 @@ describe('Array', function() {
       });
       assert.deepStrictEqual([{pure:1}], fetches);
     });
-    it('parseAndFetch', async function() {
-      var {result} = await parseAndFetch(`{
+    it('parseFetchAndJq', async function() {
+      var {result} = await parseFetchAndJq(`{
         urls:[{data:{pure:1}}]
       }
       `
@@ -43,7 +45,7 @@ describe('Array', function() {
       }
       `);
       try {
-      var {options,result} = await parseAndFetch(`{
+      var {options,result} = await parseFetchAndJq(`{
         urls:[{url:"from"}],
         jq:"error"
       }
@@ -54,18 +56,43 @@ describe('Array', function() {
         assert.deepStrictEqual(e.fetches, [{data:"data"}]);
       }
     });
-   it('parseAndFetch supports from', async function() {
+   it('parseFetchAndJq supports from', async function() {
       hungryFetch.mockResponse('from', `{
         urls:[{data:{pure:1}}]
       }
       `);
-      var {options,result} = await parseAndFetch(`{
+      var {originFetchOption:options,result} = await parseFetchAndJq(`{
         from:"from"
       }
       `
       );
-      assert.deepStrictEqual(options,{urls:[{data:{pure:1}}]});
+      assert.deepStrictEqual(options.froms.urls,[{data:{pure:1}}]);
       assert.deepStrictEqual(result,[{pure:1}]);
+    });
+   it('from supports fromjq', async function() {
+      hungryFetch.mockResponse('from', `{
+        urls:[{data:{pure:1}}]
+      }
+      `);
+      var {options,result} = await parseFetchAndJq(`{
+        from:"from",fromjq:"{data1:.[0]}"
+      }
+      `
+      );
+      assert.deepStrictEqual(result,{data1:{pure:1}});
+    });
+   it('from supports append', async function() {
+      hungryFetch.mockResponse('from', `{
+        urls:[{data:{pure:1}}]
+      }
+      `);
+      var {options,result} = await parseFetchAndJq(`{
+        from:"from",fromjq:"{data1:.[0]}",
+        add:{data2:"data2"}
+      }
+      `
+      );
+      assert.deepStrictEqual(result,{data1:{pure:1},data2:"data2"});
     });
     it('pureData1', async function() {
       hungryFetch.mockResponse('/path/to/nowhere', {
@@ -140,6 +167,17 @@ describe('Array', function() {
       `
       );
       assert.deepStrictEqual(result,["data"]);
+    });
+    it('supports function import', async function() {
+      hungryFetch.mockResponse('function.txt', `def abc:1;`);
+      var {result} = await parseFetchAndJq(`
+      {imports:["function.txt"]
+      ,
+      urls:[],
+      jq:"abc"}
+      `
+      );
+      assert.deepStrictEqual(result,1);
     });
     it('multiple supports function', async function() {
       var {result} = await parseFetchAndJq(`

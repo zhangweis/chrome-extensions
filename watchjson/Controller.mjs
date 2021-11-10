@@ -5,7 +5,7 @@ import jq from "jq-web";
     if (!urls) return fetchOption;
     var importText = await Promise.all(
       imports.map(async (url) => {
-        return await fetchText(url, context);
+        return (await fetchText(url, context)).content;
       })
     );
     var jqPath = importText.join("") + jqPath1;
@@ -56,13 +56,7 @@ import jq from "jq-web";
     return {content,url};
   }
   async function parseAndFetch(filter,on={},context={}) {
-    var options = await callJq(on, filter);
-    if (options.from) {
-      const {content,url} = await fetchText(options.from,{});
-      const ret = await parseAndFetch(content,on,{baseUrl:url});
-      return ret;
-    }
-    return {options, ...(await fetchAndJq(JSON.parse(JSON.stringify(options)), context))};
+    return await parseFetchAndJq(filter,on,context);
   }
   async function parseFetchAndJq(filter,context={},on={}) {
     const filters = filter.split('>>>');
@@ -86,6 +80,12 @@ import jq from "jq-web";
       const {originFetchOption:options,result,fetches:fetches1} = await parseFetchAndJq(content,{...context,baseUrl:url});
       fetches = fetches1;
       finalResult = result;
+      if (fetchOption.fromjq){
+        finalResult = await callJq(finalResult, fetchOption.fromjq);
+      }
+      if (fetchOption.add) {
+        finalResult = Object.assign(finalResult, fetchOption.add);
+      }
       originFetchOption = { ...originFetchOption, froms: options };
     } else {
       var result = await fetchAndJq(fetchOption, context);
@@ -99,4 +99,4 @@ import jq from "jq-web";
     return await jq.promised.json(json, filter);
   }
   
-export {fetchAndJq, callJq,parseFetchAndJq, parseAndFetch}
+export {parseFetchAndJq}
