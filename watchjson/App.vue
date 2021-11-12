@@ -138,6 +138,7 @@ export default {
         return result;
       } catch (e) {
         console.trace(e);
+        if (e.fetchOption) this.originFetchOption = e.fetchOption;
         alert(e.stack||e);
       } finally {
         var refresh=(this.originFetchOption||{}).refresh;

@@ -28,7 +28,7 @@ import jq from "jq-web";
     try {
     var result = await callJq(json, jqPath);
     } catch(e) {
-      throw {origin:e,fetches:json,toString:()=>e.toString()};
+      throw {origin:e,fetchOption,fetches:json,toString:()=>e.toString()};
     }
     return {fetches:json,result};
   }
