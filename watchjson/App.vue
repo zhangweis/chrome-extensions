@@ -50,6 +50,7 @@ h2 span:not(:first-child):before {
 }
 </style>
 <script type='typescript'>
+import jq from "jq-web";
 import * as queryString from "query-string";
 import {parseFetchAndJq} from "./Controller";
 import * as tableify from "tableify";
@@ -113,7 +114,7 @@ export default {
       clearTimeout(this.timeout);
       this.loading = true;
       try {
-        var {result, fetches, fetchOptions, originFetchOption} = await parseFetchAndJq(this.source);
+        var {result, fetches, fetchOptions, originFetchOption} = await parseFetchAndJq(this.source,{jq});
         var styles = [].concat.apply([],fetchOptions.map(({styles = []})=>styles));
         this.style = styles
           .map((s) =>

@@ -1,6 +1,7 @@
-import jq from "jq-web";
  
-  async function fetchAndJq(fetchOption,context) {
+  async function parseFetchAndJq(filter,context={},on={}) {
+  const jq=context.jq;
+    async function fetchAndJq(fetchOption,context) {
     const { imports = [], urls, jq: jqPath1="." } = fetchOption;
     if (!urls) return fetchOption;
     var importText = await Promise.all(
@@ -58,7 +59,6 @@ import jq from "jq-web";
   async function parseAndFetch(filter,on={},context={}) {
     return await parseFetchAndJq(filter,on,context);
   }
-  async function parseFetchAndJq(filter,context={},on={}) {
     const filters = filter.split('>>>');
     // const filters = [filter];
     var last = {result:on};
@@ -66,7 +66,6 @@ import jq from "jq-web";
       last = await parseFetchAndJqSingle(filter,context,last.result);
     }
     return last;
-  }
   async function parseFetchAndJqSingle(filter,context,on) {
     filter=(on.functions||"")+filter;
     let fetchOption = await callJq(on, filter);
@@ -97,6 +96,7 @@ import jq from "jq-web";
   }
   async function callJq(json, filter) {
     return await jq.promised.json(json, filter);
+  }
   }
   
 export {parseFetchAndJq}

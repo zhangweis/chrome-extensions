@@ -1,11 +1,15 @@
 import assert from 'assert';
-import {parseFetchAndJq} from "../Controller.mjs";
+import {parseFetchAndJq as originParse} from "../Controller.mjs";
 import hungryFetch from './hungry-fetch.js';
 import mockdate from 'mockdate'
+import jq from "jq-web";
 
 import {Response} from 'node-fetch';
 
 global.Response = Response;
+async function parseFetchAndJq(filter,context={},on) {
+  return await originParse(filter,{...context,jq},on);
+}
 hungryFetch.mockResponse('http://good.com/', {
   data: 'some data'
 });
