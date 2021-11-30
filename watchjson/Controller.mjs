@@ -3,7 +3,7 @@
   const jq=context.jq;
     async function fetchAndJq(fetchOption,context) {
     const { imports = [], urls, jq: jqPath1="." } = fetchOption;
-    if (!urls) return fetchOption;
+    if (!urls) return {result:fetchOption,fetches:[fetchOption]};
     var importText = await Promise.all(
       imports.map(async (url) => {
         return (await fetchText(url, context)).content;
@@ -56,9 +56,6 @@
     const content = await (await fetch(url)).text();
     return {content,url};
   }
-  async function parseAndFetch(filter,on={},context={}) {
-    return await parseFetchAndJq(filter,on,context);
-  }
     const filters = filter.split('>>>');
     // const filters = [filter];
     var last = {result:on};
@@ -76,7 +73,7 @@
     var fetches;
     if (fetchOption.from) {
       var {url,content} = await fetchText(fetchOption.from, context)
-      const {originFetchOption:options,result,fetches:fetches1} = await parseFetchAndJq(content,{...context,baseUrl:url});
+      const {originFetchOption:options,result,fetches:fetches1} = await parseFetchAndJq(content,{...context,baseUrl:url},on);
       fetches = fetches1;
       finalResult = result;
       if (fetchOption.fromjq){

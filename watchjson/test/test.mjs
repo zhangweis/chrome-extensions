@@ -21,6 +21,13 @@ describe('Array', function() {
     hungryFetch.clear();
    });
   describe('pureData', function() {
+    it('simplifiedPureData', async function() {
+      var {result:resp} = await fetchAndJq({
+        pure:1
+      });
+      assert.deepStrictEqual({pure:1}, resp);
+    });
+    
     it('pureData', async function() {
       var {result:resp} = await fetchAndJq({
         urls:[{data:{pure:1}}]
@@ -126,6 +133,29 @@ describe('Array', function() {
       `
       );
       assert.deepStrictEqual([{pure:1}], result);
+    });
+    it('supports multiple puredata', async function() {
+      var {result} = await parseFetchAndJq(`
+      {data:"data"}
+      >>>
+      {
+        urls:[{data:.data}]
+      }
+      `
+      );
+      assert.deepStrictEqual(result,["data"]);
+    });
+    it('from supports data input', async function() {
+      hungryFetch.mockResponse('from', `
+      {urls:[{data:.data}]}
+      `);
+      var {result} = await parseFetchAndJq(`
+      {data:"data"}
+      >>>
+      {from:"from"}
+      `
+      );
+      assert.deepStrictEqual(result,["data"]);
     });
     it('supports multiple', async function() {
       var {result} = await parseFetchAndJq(`
