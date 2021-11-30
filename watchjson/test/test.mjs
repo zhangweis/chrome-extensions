@@ -98,6 +98,19 @@ describe('Array', function() {
       );
       assert.deepStrictEqual(result,{data1:{pure:1},data2:"data2"});
     });
+    it('from supports array append', async function() {
+      hungryFetch.mockResponse('from', `{
+        urls:[{data:{pure:1}}]
+      }
+      `);
+      var {options,result} = await parseFetchAndJq(`{
+        from:"from",
+        add:[{data2:"data2"}]
+      }
+      `
+      );
+      assert.deepStrictEqual(result,[{pure:1},{data2:"data2"}]);
+    });
     it('pureData1', async function() {
       hungryFetch.mockResponse('/path/to/nowhere', {
         data: 'some data'

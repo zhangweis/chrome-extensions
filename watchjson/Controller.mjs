@@ -83,7 +83,7 @@
         finalResult = await callJq(finalResult, fetchOption.fromjq);
       }
       if (fetchOption.add) {
-        finalResult = Object.assign(finalResult, fetchOption.add);
+        finalResult = await callJq([finalResult, fetchOption.add],'add');
       }
       originFetchOption = { ...originFetchOption, froms: options };
     } else {
