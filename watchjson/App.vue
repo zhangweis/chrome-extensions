@@ -1,6 +1,5 @@
 <template>
-  <div id="main">
-    <div v-html="style"></div>
+  <div id="main" :style="style">
     <loading :active.sync="loading" :is-full-page="true"></loading>
 
     <div>
@@ -116,13 +115,15 @@ export default {
       try {
         var {result, fetches, fetchOptions, originFetchOption} = await parseFetchAndJq(this.source,{jq});
         var styles = [].concat.apply([],fetchOptions.map(({styles = []})=>styles));
-        this.style = styles
+        this.style = styles;
+/*
           .map((s) =>
             s.content
               ? `<style>${s.content}</stye>`
               : `<link rel="stylesheet" href="${s.link}">`
           )
           .join("");
+*/
         this.badge = forceArray(result.badge);
         this.title = result.title;
         this.content = result.content||result;
@@ -132,7 +133,7 @@ export default {
         });
         this.debugHtml = tableify((result||{}).debug);
         this.originFetchOption=originFetchOption;
-        console.log({result,fetches,originFetchOption});
+        console.log({result,fetches,originFetchOption,fetchOptions});
         document.title = [this.title || oldTitle, this.badge.join(" | ")]
           .filter((e) => e)
           .join(" - ");

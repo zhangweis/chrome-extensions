@@ -42,6 +42,14 @@ describe('Array', function() {
       });
       assert.deepStrictEqual([{pure:1}], fetches);
     });
+    it('array_puredata', async function() {
+      var {result} = await fetchAndJq([{
+        urls:[{data:{pure:1}}]
+      },{
+        urls:[{data:{pure:2}}]
+      }]);
+      assert.deepStrictEqual([[{pure:1}],[{pure:2}]], result);
+    });
     it('parseFetchAndJq', async function() {
       var {result} = await parseFetchAndJq(`{
         urls:[{data:{pure:1}}]

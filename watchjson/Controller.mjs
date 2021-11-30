@@ -66,6 +66,16 @@
   async function parseFetchAndJqSingle(filter,context,on) {
     filter=(on.functions||"")+filter;
     let fetchOption = await callJq(on, filter);
+    var fetchOptions = fetchOption;
+    let isSingle = !Array.isArray(fetchOptions);
+    if (isSingle) {fetchOptions=[fetchOptions];}
+    var result = await Promise.all(fetchOptions.map(option=>parseFetchAndJqSingleElement(option,context,on)));
+    var results = result.map(r=>r.result);
+    if (isSingle) results=results[0];
+    var ret = result.pop();
+    return Object.assign(ret,{result:results});
+  }
+  async function parseFetchAndJqSingleElement(fetchOption,context,on) {
     let originFetchOption = { ...fetchOption };
     var fetchOptions = [fetchOption];
       
