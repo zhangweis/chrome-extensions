@@ -2,7 +2,11 @@ import assert from 'assert';
 import {parseFetchAndJq as originParse} from "../Controller.mjs";
 import hungryFetch from './hungry-fetch.js';
 import mockdate from 'mockdate'
+import chai,{expect} from 'chai';
 import jq from "jq-web";
+import chaiAsPromised from 'chai-as-promised';
+
+chai.use(chaiAsPromised);
 
 import {Response} from 'node-fetch';
 
@@ -58,6 +62,34 @@ describe('Array', function() {
       );
       assert.deepStrictEqual([{pure:1}], result);
     });
+    it('throws error when status=500', async function() {
+      hungryFetch.mockResponse('retry-able', `text`,{
+        status:500
+      });
+      await expect((async()=>{
+      return await parseFetchAndJq(`
+      {
+        urls:[{url:"retry-able"}]
+      }
+      `
+      )
+      })()).to.be.rejectedWith(Error)
+      });
+    it('retries 2times', async function() {
+      hungryFetch.mockResponse('retry-able', `text`,{
+        status:500
+      });
+      try{
+      var {result} = await parseFetchAndJq(`
+      {
+        urls:[{url:"retry-able"}]
+      }
+      `
+      );
+      }catch(e){
+      assert.deepStrictEqual(hungryFetch.calls().length,2);
+      }
+      });
     it('error contains fetches when jq fails', async function() {
       hungryFetch.mockResponse('from', `{
         "data":"data"

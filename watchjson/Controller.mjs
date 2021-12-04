@@ -34,7 +34,15 @@
     return {fetches:json,result};
   }
   async function fetchJson(urlToGo,context) {
+    try {
+    return await fetchJsonOnce(urlToGo,context);
+    }catch(e){
+    return await fetchJsonOnce(urlToGo,context);
+    }
+  }
+  async function fetchJsonOnce(urlToGo,context) {
     const fetched = await fetch(getUrl(urlToGo.url,context), urlToGo);
+    if (fetched.status>=300) throw new Error(fetched.statusText);
     const text = await fetched.text();
     var jsonContent;
     if (text[0]=='['||text[0]=='{') {

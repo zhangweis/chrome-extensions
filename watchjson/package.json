@@ -20,6 +20,8 @@
     "webpack": "^4.29.3"
   },
   "devDependencies": {
+    "chai": "^4.3.4",
+    "chai-as-promised": "^7.1.1",
     "html-webpack-inline-source-plugin": "^0.0.10",
     "html-webpack-plugin": "^4.5.0",
     "mocha": "^9.1.2",
