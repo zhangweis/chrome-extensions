@@ -20,10 +20,21 @@ hungryFetch.mockResponse('http://good.com/', {
 async function fetchAndJq(o) {
   return await parseFetchAndJq(JSON.stringify(o));
 }
-describe('Array', function() {
+describe('parseFetchAndJq', function() {
   beforeEach(() => {
     hungryFetch.clear();
    });
+    it('supports function import', async function() {
+      hungryFetch.mockResponse('function.txt', `def abc:1;`);
+      var {result} = await parseFetchAndJq(`
+      {imports:["function.txt"]
+      ,
+      urls:[],
+      jq:"abc"}
+      `
+      );
+      assert.deepStrictEqual(result,1);
+    });
   describe('pureData', function() {
     it('simplifiedPureData', async function() {
       var {result:resp} = await fetchAndJq({
@@ -38,6 +49,14 @@ describe('Array', function() {
         ,jq:'.[0]'
       });
       assert.deepStrictEqual({pure:1}, resp);
+    });
+    it('no jq', async function() {
+      var {result} = await parseFetchAndJq(`{
+        urls:[{data:{pure:1}}]
+      }
+      `
+      );
+      assert.deepStrictEqual([{pure:1}], result);
     });
     it('returns fetches', async function() {
       var {fetches} = await fetchAndJq({
@@ -62,6 +81,15 @@ describe('Array', function() {
       );
       assert.deepStrictEqual([{pure:1}], result);
     });
+    it('pureData1', async function() {
+      hungryFetch.mockResponse('/path/to/nowhere', {
+        data: 'some data'
+      });
+    var resp = await (await fetch("/path/to/nowhere")).json();
+    assert.deepStrictEqual({data:'some data'}, resp);
+  });
+  });
+  describe('httpFetch', function() {
     it('throws error when status=500', async function() {
       hungryFetch.mockResponse('retry-able', `text`,{
         status:500
@@ -74,6 +102,16 @@ describe('Array', function() {
       `
       )
       })()).to.be.rejectedWith(Error)
+      });
+    it('succeed only once', async function() {
+      hungryFetch.mockResponse('retry-able', `text`);
+      var {result} = await parseFetchAndJq(`
+      {
+        urls:[{url:"retry-able"}]
+      }
+      `
+      );
+      assert.deepStrictEqual(hungryFetch.calls().length,1);
       });
     it('retries 2times', async function() {
       hungryFetch.mockResponse('retry-able', `text`,{
@@ -90,6 +128,16 @@ describe('Array', function() {
       assert.deepStrictEqual(hungryFetch.calls().length,2);
       }
       });
+    it('supports relative url', async function() {
+      hungryFetch.mockResponse('http://site/one/two/text.txt', `text`);
+      var {result} = await parseFetchAndJq(`
+      {
+        urls:[{url:"./text.txt"}]
+      }
+      `,{baseUrl:'http://site/one/two/abc.jq.txt'}
+      );
+      assert.deepStrictEqual(result,["text"]);
+    });
     it('error contains fetches when jq fails', async function() {
       hungryFetch.mockResponse('from', `{
         "data":"data"
@@ -107,6 +155,48 @@ describe('Array', function() {
         assert.deepStrictEqual(e.fetches, [{data:"data"}]);
       }
     });
+    it('supports text url', async function() {
+      hungryFetch.mockResponse('text.txt', `text`);
+      var {result} = await parseFetchAndJq(`
+      {
+        urls:[{url:"text.txt"}]
+      }
+      `
+      );
+      assert.deepStrictEqual(result,["text"]);
+    });
+  describe('timestamp', function() {
+  beforeEach(() => {
+    mockdate.set(new Date(1))
+  })
+  afterEach(() => {
+    mockdate.reset()
+  })
+
+    it('supports t_only', async function() {
+      hungryFetch.mockResponse('http://site/one/two/text.txt?t=1', `text`);
+      var {result} = await parseFetchAndJq(`
+      {
+        urls:[{url:"./text.txt?t=\${t}"}]
+      }
+      `,{baseUrl:'http://site/one/two/abc.jq.txt'}
+      );
+      assert.deepStrictEqual(result,["text"]);
+    });
+    it('supports timestamp', async function() {
+      hungryFetch.mockResponse('http://site/one/two/text.txt?t=1', `text`);
+      var {result} = await parseFetchAndJq(`
+      {
+        urls:[{url:"./text.txt?t=\${timestamp}"}]
+      }
+      `,{baseUrl:'http://site/one/two/abc.jq.txt'}
+      );
+      assert.deepStrictEqual(result,["text"]);
+    });
+
+  });
+  });
+  describe('fetchFrom', function() {
    it('parseFetchAndJq supports from', async function() {
       hungryFetch.mockResponse('from', `{
         urls:[{data:{pure:1}}]
@@ -158,22 +248,9 @@ describe('Array', function() {
       );
       assert.deepStrictEqual(result,[{pure:1},{data2:"data2"}]);
     });
-    it('pureData1', async function() {
-      hungryFetch.mockResponse('/path/to/nowhere', {
-        data: 'some data'
-      });
-    var resp = await (await fetch("/path/to/nowhere")).json();
-    assert.deepStrictEqual({data:'some data'}, resp);
-  });
-  describe('parseFetchAndJq', function() {
-    it('is normal', async function() {
-      var {result} = await parseFetchAndJq(`{
-        urls:[{data:{pure:1}}]
-      }
-      `
-      );
-      assert.deepStrictEqual([{pure:1}], result);
-    });
+});
+
+  describe('multiple segments', function() {
     it('supports multiple puredata', async function() {
       var {result} = await parseFetchAndJq(`
       {data:"data"}
@@ -255,17 +332,6 @@ describe('Array', function() {
       );
       assert.deepStrictEqual(result,["data"]);
     });
-    it('supports function import', async function() {
-      hungryFetch.mockResponse('function.txt', `def abc:1;`);
-      var {result} = await parseFetchAndJq(`
-      {imports:["function.txt"]
-      ,
-      urls:[],
-      jq:"abc"}
-      `
-      );
-      assert.deepStrictEqual(result,1);
-    });
     it('multiple supports function', async function() {
       var {result} = await parseFetchAndJq(`
       {urls:[{data:{functions:"def abc:1;"}}],
@@ -278,56 +344,5 @@ describe('Array', function() {
       );
       assert.deepStrictEqual(result,[1]);
     });
-    it('supports text url', async function() {
-      hungryFetch.mockResponse('text.txt', `text`);
-      var {result} = await parseFetchAndJq(`
-      {
-        urls:[{url:"text.txt"}]
-      }
-      `
-      );
-      assert.deepStrictEqual(result,["text"]);
-    });
-    it('supports relative url', async function() {
-      hungryFetch.mockResponse('http://site/one/two/text.txt', `text`);
-      var {result} = await parseFetchAndJq(`
-      {
-        urls:[{url:"./text.txt"}]
-      }
-      `,{baseUrl:'http://site/one/two/abc.jq.txt'}
-      );
-      assert.deepStrictEqual(result,["text"]);
-    });
   });
-  describe('timestamp', function() {
-  beforeEach(() => {
-    mockdate.set(new Date(1))
-  })
-  afterEach(() => {
-    mockdate.reset()
-  })
-
-    it('supports t_only', async function() {
-      hungryFetch.mockResponse('http://site/one/two/text.txt?t=1', `text`);
-      var {result} = await parseFetchAndJq(`
-      {
-        urls:[{url:"./text.txt?t=\${t}"}]
-      }
-      `,{baseUrl:'http://site/one/two/abc.jq.txt'}
-      );
-      assert.deepStrictEqual(result,["text"]);
-    });
-    it('supports timestamp', async function() {
-      hungryFetch.mockResponse('http://site/one/two/text.txt?t=1', `text`);
-      var {result} = await parseFetchAndJq(`
-      {
-        urls:[{url:"./text.txt?t=\${timestamp}"}]
-      }
-      `,{baseUrl:'http://site/one/two/abc.jq.txt'}
-      );
-      assert.deepStrictEqual(result,["text"]);
-    });
-
-  });
-});
 });
