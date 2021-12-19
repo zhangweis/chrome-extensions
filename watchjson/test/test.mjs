@@ -262,6 +262,21 @@ describe('parseFetchAndJq', function() {
       );
       assert.deepStrictEqual(result,["data"]);
     });
+    it('normalized from url', async function() {
+      hungryFetch.mockResponse('http://site/one/from0', `
+      {urls:[{data:"data"}]}
+      `);
+      var {originFetchOption,normalizedFroms} = await parseFetchAndJq(`
+      {from:"../from0"}
+      >>>
+      .[0]|
+      {
+        urls:[{data:.}]
+      }
+      `,{baseUrl:'http://site/one/two/abc.jq.txt'}
+      );
+      assert.deepStrictEqual(originFetchOption.normalizedFroms,["http://site/one/from0"]);
+    });
     it('from supports data input', async function() {
       hungryFetch.mockResponse('from', `
       {urls:[{data:.data}]}
@@ -285,6 +300,21 @@ describe('parseFetchAndJq', function() {
       `
       );
       assert.deepStrictEqual(result,["data"]);
+    });
+    it('fetches contain hierarchy', async function() {
+      hungryFetch.mockResponse('from0', `
+      {urls:[{data:"data"}]}
+      `);
+      var {fetches} = await parseFetchAndJq(`
+      {from:"from0"}
+      >>>
+      .[0]|
+      {
+        urls:[{data:.}]
+      }
+      `
+      );
+      assert.deepStrictEqual(fetches,[["data"],["data"]]);
     });
     it('multiple supports from', async function() {
       hungryFetch.mockResponse('from0', `

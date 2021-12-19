@@ -67,10 +67,21 @@
     const filters = filter.split('>>>');
     // const filters = [filter];
     var last = {result:on};
+    var results = [];
     for (var filter of filters) {
       last = await parseFetchAndJqSingle(filter,context,last.result);
+      results.push(last);
     }
-    return last;
+    var fetches = results.map(r=>r.fetches);
+
+    var normalizedFroms = results.reduce((s,r)=>{
+      return s.concat(r.originFetchOption.normalizedFroms);
+    },[]);
+    if (results.length==1){
+      fetches=fetches[0];
+    }
+    last.originFetchOption.normalizedFroms=normalizedFroms;
+    return {...last,fetches,normalizedFroms};
   async function parseFetchAndJqSingle(filter,context,on) {
     filter=(on.functions||"")+filter;
     let fetchOption = await callJq(on, filter);
@@ -87,7 +98,7 @@
     return Object.assign(ret,{result:results});
   }
   async function parseFetchAndJqSingleElement(fetchOption,context,on) {
-    let originFetchOption = { ...fetchOption };
+    let originFetchOption = { ...fetchOption,normalizedFroms:[] };
     var fetchOptions = [fetchOption];
       
     var finalResult;
@@ -96,6 +107,7 @@
       var {url,content} = await fetchText(fetchOption.from, context)
       const {originFetchOption:options,result,fetches:fetches1} = await parseFetchAndJq(content,{...context,baseUrl:url},on);
       fetches = fetches1;
+      originFetchOption.normalizedFroms=[url];
       finalResult = result;
       if (fetchOption.fromjq){
         finalResult = await callJq(finalResult, fetchOption.fromjq);
