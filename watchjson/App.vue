@@ -94,14 +94,19 @@ export default {
       contentHtml: "",
       fetchOptionHtml: "",
       debugHtml:"",
+      isRefreshing:false,
       source,
       style: "",
     };
   },
   async created() {
+    window.addEventListener('unload', this.onunload);
     this.curlAndJq();
   },
   methods: {
+    onunload() {
+      this.isRefreshing = true;
+    },
     async handleIt() {
       const parsed = location.hash.substring(1);
       if (parsed.source != btoa(this.source)) {
@@ -141,7 +146,7 @@ export default {
       } catch (e) {
         console.trace(e);
         if (e.fetchOption) this.originFetchOption = e.fetchOption;
-        alert(e.stack||e);
+        if (!this.isRefreshing)alert(e.stack||e);
       } finally {
         var refresh=(this.originFetchOption||{}).refresh;
         if (refresh) {
