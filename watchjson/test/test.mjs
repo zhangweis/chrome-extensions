@@ -50,6 +50,13 @@ describe('parseFetchAndJq', function() {
       });
       assert.deepStrictEqual({pure:1}, resp);
     });
+    it('supportsAdd', async function() {
+      var {result:resp} = await fetchAndJq({
+        urls:[{data:{pure:1}}]
+        ,jq:'.[0]',add:{added:2}
+      });
+      assert.deepStrictEqual({pure:1,added:2}, resp);
+    });
     it('no jq', async function() {
       var {result} = await parseFetchAndJq(`{
         urls:[{data:{pure:1}}]
@@ -248,6 +255,18 @@ describe('parseFetchAndJq', function() {
       );
       assert.deepStrictEqual(result,[{pure:1},{data2:"data2"}]);
     });
+   it('from supports params', async function() {
+      hungryFetch.mockResponse('from', `{
+        urls:[{data:.}]
+      }
+      `);
+      var {options,result} = await parseFetchAndJq(`{
+        from:"from",params:{param1:1}
+      }
+      `
+      );
+      assert.deepStrictEqual(result,[{param1:1}]);
+    });
 });
 
   describe('multiple segments', function() {
@@ -300,6 +319,24 @@ describe('parseFetchAndJq', function() {
       `
       );
       assert.deepStrictEqual(result,["data"]);
+    });
+    it('useOriginWhenNoUrls', async function() {
+      var {result} = await parseFetchAndJq(`
+      {urls:[{data:"data"}]}
+      >>>
+      .[0]
+      `
+      );
+      assert.deepStrictEqual(result,"data");
+    });
+    it('supportsArgs', async function() {
+      var {result} = await parseFetchAndJq(`
+      {urls:[{data:"data"}],args:{params:{p1:1}}}
+      >>>
+      $params.p1
+      `
+      );
+      assert.deepStrictEqual(result,1);
     });
     it('fetches contain hierarchy', async function() {
       hungryFetch.mockResponse('from0', `

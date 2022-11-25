@@ -50,15 +50,15 @@ h2 span:not(:first-child):before {
 </style>
 <script type='typescript'>
 import jq from "jq-web";
-import * as queryString from "query-string";
+import queryString from "query-string";
 import {parseFetchAndJq} from "./Controller";
-import * as tableify from "tableify";
+import tableify from "tableify";
 // import * as setQuery from "set-query-string";
-import * as setLocationHash from "set-location-hash";
-import * as linkify from "html-linkify";
+import setLocationHash from "set-location-hash";
+import linkify from "html-linkify";
 import Loading from "vue-loading-overlay";
-import * as forceArray from "force-array";
-import "vue-loading-overlay/dist/vue-loading.css";
+import forceArray from "force-array";
+import "vue-loading-overlay/dist/css/index.css";
 
 var oldTitle = document.title;
 export default {

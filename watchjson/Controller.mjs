@@ -84,7 +84,7 @@
     return {...last,fetches,normalizedFroms};
   async function parseFetchAndJqSingle(filter,context,on) {
     filter=(on.functions||"")+filter;
-    let fetchOption = await callJq(on, filter);
+    let fetchOption = await callJq(on, filter,context);
     var fetchOptions = fetchOption;
     let isSingle = !Array.isArray(fetchOptions);
     if (isSingle) {fetchOptions=[fetchOptions];}
@@ -103,17 +103,17 @@
       
     var finalResult;
     var fetches;
+    if (fetchOption.args) {
+      context.args=fetchOption.args;
+    }
     if (fetchOption.from) {
       var {url,content} = await fetchText(fetchOption.from, context)
-      const {originFetchOption:options,result,fetches:fetches1} = await parseFetchAndJq(content,{...context,baseUrl:url},on);
+      const {originFetchOption:options,result,fetches:fetches1} = await parseFetchAndJq(content,{...context,baseUrl:url},fetchOption.params||on);
       fetches = fetches1;
       originFetchOption.normalizedFroms=[url];
       finalResult = result;
       if (fetchOption.fromjq){
         finalResult = await callJq(finalResult, fetchOption.fromjq);
-      }
-      if (fetchOption.add) {
-        finalResult = await callJq([finalResult, fetchOption.add],'add');
       }
       originFetchOption = { ...originFetchOption, froms: options };
     } else {
@@ -121,11 +121,23 @@
       fetches = result.fetches;
       finalResult = result.result;
     }
+    if (fetchOption.add) {
+      finalResult = await callJq([finalResult, fetchOption.add],'add');
+    }
     var result = finalResult;
     return {result, fetchOptions, originFetchOption, fetches};
   }
-  async function callJq(json, filter) {
-    return await jq.promised.json(json, filter);
+  async function callJq(json, filter, context) {
+    var flags = ['-c'];
+    if (context&&context.args) {
+      for (var key of Object.keys(context.args)) {
+        flags.push("--argjson");
+        flags.push(key);
+        flags.push(JSON.stringify(context.args[key]));
+      }
+    }
+
+    return JSON.parse(await jq.promised.raw(JSON.stringify(json), filter, flags));
   }
   }
   
