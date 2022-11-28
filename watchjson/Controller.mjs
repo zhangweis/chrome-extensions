@@ -1,6 +1,7 @@
  
-  async function parseFetchAndJq(filter,context={},on={}) {
-  const jq=context.jq;
+  async function parseFetchAndJq(filter1,context={},on={}) {
+    var filter = filter1;
+    const jq=context.jq;
     async function fetchAndJq(fetchOption,context) {
     const { imports = [], urls, jq: jqPath1="." } = fetchOption;
     if (!urls) return {result:fetchOption,fetches:[fetchOption]};
@@ -27,7 +28,7 @@
       })
     );
     try {
-    var result = await callJq(json, jqPath);
+    var result = await callJq(json, jqPath, context);
     } catch(e) {
       throw {origin:e,fetchOption,fetches:json,toString:()=>e.toString()};
     }

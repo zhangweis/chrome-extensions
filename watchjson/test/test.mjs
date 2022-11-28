@@ -333,6 +333,8 @@ describe('parseFetchAndJq', function() {
       var {result} = await parseFetchAndJq(`
       {urls:[{data:"data"}],args:{params:{p1:1}}}
       >>>
+      2
+      >>>
       $params.p1
       `
       );
