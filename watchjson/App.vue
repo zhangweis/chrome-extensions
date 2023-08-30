@@ -51,13 +51,12 @@ h2 span:not(:first-child):before {
 <script type='typescript'>
 import jq from "jq-web";
 import queryString from "query-string";
-import {parseFetchAndJq} from "./Controller";
+import {parseFetchAndJq, formatBadges} from "./Controller";
 import tableify from "tableify";
 // import * as setQuery from "set-query-string";
 import setLocationHash from "set-location-hash";
 import linkify from "html-linkify";
 import Loading from "vue-loading-overlay";
-import forceArray from "force-array";
 import "vue-loading-overlay/dist/css/index.css";
 
 var oldTitle = document.title;
@@ -129,7 +128,7 @@ export default {
           )
           .join("");
 */
-        this.badge = forceArray(result.badge);
+        this.badge = formatBadges(result.badge);
         this.title = result.title;
         this.content = result.content||result;
         this.contentHtml = tableify(this.content);

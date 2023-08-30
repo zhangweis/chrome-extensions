@@ -1,5 +1,5 @@
 import assert from 'assert';
-import {parseFetchAndJq as originParse} from "../Controller.mjs";
+import {parseFetchAndJq as originParse, formatBadges} from "../Controller.mjs";
 import hungryFetch from './hungry-fetch.js';
 import mockdate from 'mockdate'
 import chai,{expect} from 'chai';
@@ -281,6 +281,43 @@ describe('parseFetchAndJq', function() {
       );
       assert.deepStrictEqual(result,["data"]);
     });
+    it('supportsFunctions', async function() {
+      var {result} = await parseFetchAndJq(`
+      {functions:"def func1:1;def func2:2;"}
+      >>>
+      {
+        a:func1
+      }
+      `
+      );
+      assert.deepStrictEqual(result,{a:1});
+    });
+    it('functionsOnContext', async function() {
+      var {result} = await parseFetchAndJq(`
+      {functions:"def func1:1;def func2:2;"}
+      >>>
+      1
+      >>>
+      {
+        a:func1
+      }
+      `
+      );
+      assert.deepStrictEqual(result,{a:1});
+    });
+    it('supportsDollarContext', async function() {
+      var {result} = await parseFetchAndJq(`
+      {functions:"def func1:1;def func2:2;"}
+      >>>
+      1
+      >>>
+      {
+        a:$functions
+      }
+      `
+      );
+      assert.deepStrictEqual(result,{a:"def func1:1;def func2:2;"});
+    });
     it('normalized from url', async function() {
       hungryFetch.mockResponse('http://site/one/from0', `
       {urls:[{data:"data"}]}
@@ -412,6 +449,24 @@ describe('parseFetchAndJq', function() {
       `
       );
       assert.deepStrictEqual(result,[1]);
+    });
+  });
+  describe('formatBadges', function() {
+    it('supports string', async function() {
+      var result = formatBadges('string');
+      assert.deepStrictEqual(['string'], result);
+    });
+    it('support string array', async function() {
+      var result = formatBadges(['s1','s2']);
+      assert.deepStrictEqual(['s1','s2'], result);
+    });
+    it('supports number', async function() {
+      var result = formatBadges(1);
+      assert.deepStrictEqual(['1'], result);
+    });
+    it('supports number format', async function() {
+      var result = formatBadges([['%.2f',0.3]]);
+      assert.deepStrictEqual(['0.30'], result);
     });
   });
 });

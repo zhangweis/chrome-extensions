@@ -1,4 +1,6 @@
- 
+import forceArray from "force-array";
+import {vsprintf,sprintf} from 'sprintf-js';
+
   async function parseFetchAndJq(filter1,context={},on={}) {
     var filter = filter1;
     const jq=context.jq;
@@ -84,7 +86,7 @@
     last.originFetchOption.normalizedFroms=normalizedFroms;
     return {...last,fetches,normalizedFroms};
   async function parseFetchAndJqSingle(filter,context,on) {
-    filter=(on.functions||"")+filter;
+    filter=(context.functions||"")+filter;
     let fetchOption = await callJq(on, filter,context);
     var fetchOptions = fetchOption;
     let isSingle = !Array.isArray(fetchOptions);
@@ -126,20 +128,30 @@
       finalResult = await callJq([finalResult, fetchOption.add],'add');
     }
     var result = finalResult;
+    if (result.functions) {
+      context.functions = result.functions;
+    }
     return {result, fetchOptions, originFetchOption, fetches};
   }
   async function callJq(json, filter, context) {
     var flags = ['-c'];
-    if (context&&context.args) {
-      for (var key of Object.keys(context.args)) {
+    if (context) {
+      var args = Object.assign({},context.args||{},{functions:context.functions||""});
+      for (var key of Object.keys(args)) {
         flags.push("--argjson");
         flags.push(key);
-        flags.push(JSON.stringify(context.args[key]));
+        flags.push(JSON.stringify(args[key]));
       }
     }
 
     return JSON.parse(await jq.promised.raw(JSON.stringify(json), filter, flags));
   }
   }
-  
-export {parseFetchAndJq}
+function formatBadges(badges) {
+  return forceArray(badges).map(b=>{
+    var array = forceArray(b);
+    if (array.length==1&&typeof(array[0])=='number') array=['%f',...array];
+    return sprintf.apply(this,array);
+  });
+}
+export {parseFetchAndJq, formatBadges}
