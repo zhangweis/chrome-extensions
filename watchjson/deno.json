@@ -1,0 +1,5 @@
+{
+  "imports": {
+    "force-array": "https://jspm.dev/force-array"
+  }
+}
