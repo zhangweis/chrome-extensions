@@ -1,4 +1,5 @@
-  async function parseFetchAndJq(filter1,context={},on={}) {
+import forceArray from "force-array";  
+async function parseFetchAndJq(filter1,context={},on={}) {
     var filter = filter1;
     const jq=context.jq;
     async function fetchAndJq(fetchOption,context) {
