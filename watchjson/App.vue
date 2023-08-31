@@ -51,6 +51,7 @@ h2 span:not(:first-child):before {
 <script type='typescript'>
 import jq from "jq-web";
 import queryString from "query-string";
+import forceArray from "force-array";
 import {vsprintf,sprintf} from 'sprintf-js';
 import {parseFetchAndJq, formatBadges} from "./Controller";
 import tableify from "tableify";
@@ -129,7 +130,7 @@ export default {
           )
           .join("");
 */
-        this.badge = formatBadges(result.badge,{vsprintf,sprintf});
+        this.badge = formatBadges(result.badge,{vsprintf,sprintf,forceArray});
         this.title = result.title;
         this.content = result.content||result;
         this.contentHtml = tableify(this.content);
