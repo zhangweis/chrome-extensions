@@ -1,3 +1,4 @@
+import forceArray from "force-array";
   async function parseFetchAndJq(filter1,context={},on={}) {
     var filter = filter1;
     const jq=context.jq;
@@ -144,7 +145,7 @@
     return JSON.parse(await jq.promised.raw(JSON.stringify(json), filter, flags));
   }
   }
-function formatBadges(badges,{vsprintf,sprintf,forceArray}) {
+function formatBadges(badges,{vsprintf,sprintf}) {
   return forceArray(badges).map(b=>{
     var array = forceArray(b);
     if (array.length==1&&typeof(array[0])=='number') array=['%f',...array];
