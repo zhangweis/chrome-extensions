@@ -1,10 +1,12 @@
 import assert from 'assert';
-import {parseFetchAndJq as originParse, formatBadges} from "../Controller.mjs";
+import {parseFetchAndJq as originParse, formatBadges as orginFormatBadges} from "../Controller.mjs";
 import hungryFetch from './hungry-fetch.js';
 import mockdate from 'mockdate'
 import chai,{expect} from 'chai';
 import jq from "jq-web";
 import chaiAsPromised from 'chai-as-promised';
+import forceArray from "force-array";
+import {vsprintf,sprintf} from 'sprintf-js';
 
 chai.use(chaiAsPromised);
 
@@ -13,6 +15,9 @@ import {Response} from 'node-fetch';
 global.Response = Response;
 async function parseFetchAndJq(filter,context={},on) {
   return await originParse(filter,{...context,jq},on);
+}
+function formatBadges(badges) {
+  return orginFormatBadges(badges, {forceArray, vsprintf,sprintf});
 }
 hungryFetch.mockResponse('http://good.com/', {
   data: 'some data'
