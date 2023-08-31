@@ -152,4 +152,5 @@ function formatBadges(badges,{vsprintf,sprintf}) {
     return sprintf.apply(this,array);
   });
 }
+
 export {parseFetchAndJq, formatBadges}
