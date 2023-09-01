@@ -5,5 +5,5 @@ import {parseFetchAndJq,formatBadges} from "./Controller.mjs";
 const stdinContent = await Deno.readAll(Deno.stdin);
 const input = new TextDecoder().decode(stdinContent);
 var {result} =await parseFetchAndJq(input,{jq});
-if (result.badge) {result.formattedBadges = formatBadges(result.badge,{vsprintf,sprintf,forceArray})} 
+if (result.badge) {result.formattedBadges = formatBadges(result.badge,{vsprintf,sprintf,forceArray});delete result.badge} 
 console.log(JSON.stringify(result));
