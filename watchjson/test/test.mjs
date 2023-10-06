@@ -1,18 +1,24 @@
-import assert from 'assert';
+//import assert from 'assert';
+import assert from 'node:assert';
 import {parseFetchAndJq as originParse, formatBadges as orginFormatBadges} from "../Controller.mjs";
-import hungryFetch from './hungry-fetch.js';
+//import hungryFetch from './hungry-fetch.js';
+import * as hungryFetch from 'https://jspm.dev/hungry-fetch';
 import mockdate from 'mockdate'
 import chai,{expect} from 'chai';
-import jq from "jq-web";
+//import jq from "jq-web";
+import jq from "../jq.asm.bundle1.js";
 import chaiAsPromised from 'chai-as-promised';
 import forceArray from "force-array";
 import {vsprintf,sprintf} from 'sprintf-js';
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  it,
+} from "https://deno.land/x/deno_mocha/mod.ts";
 
 chai.use(chaiAsPromised);
 
-import {Response} from 'node-fetch';
-
-global.Response = Response;
 async function parseFetchAndJq(filter,context={},on) {
   return await originParse(filter,{...context,jq},on);
 }
@@ -102,6 +108,9 @@ describe('parseFetchAndJq', function() {
   });
   });
   describe('httpFetch', function() {
+  beforeEach(() => {
+    hungryFetch.clear();
+   });
     it('throws error when status=500', async function() {
       hungryFetch.mockResponse('retry-able', `text`,{
         status:500
@@ -209,6 +218,9 @@ describe('parseFetchAndJq', function() {
   });
   });
   describe('fetchFrom', function() {
+  beforeEach(() => {
+    hungryFetch.clear();
+   });
    it('parseFetchAndJq supports from', async function() {
       hungryFetch.mockResponse('from', `{
         urls:[{data:{pure:1}}]
@@ -275,6 +287,9 @@ describe('parseFetchAndJq', function() {
 });
 
   describe('multiple segments', function() {
+  beforeEach(() => {
+    hungryFetch.clear();
+   });
     it('supports multiple puredata', async function() {
       var {result} = await parseFetchAndJq(`
       {data:"data"}
