@@ -53,6 +53,7 @@ async function parseFetchAndJq(filter1,context={},on={}) {
     return jsonContent;
   }
   function getUrl(url,{baseUrl}={}){
+    if (url.substring(0,5)=='data:') return url;
     if (baseUrl) {
       url = new URL(url, baseUrl).href;
     }

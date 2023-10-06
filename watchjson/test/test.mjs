@@ -371,6 +371,17 @@ describe('parseFetchAndJq', function() {
       );
       assert.deepStrictEqual(result,"data");
     });
+    it('argsWithoutFromOrUrls', async function() {
+      var {result} = await parseFetchAndJq(`
+      {args:{params:{p1:1}}}
+      >>>
+      2
+      >>>
+      $params.p1
+      `
+      );
+      assert.deepStrictEqual(result,1);
+    });
     it('supportsArgs', async function() {
       var {result} = await parseFetchAndJq(`
       {urls:[{data:"data"}],args:{params:{p1:1}}}
@@ -381,6 +392,22 @@ describe('parseFetchAndJq', function() {
       `
       );
       assert.deepStrictEqual(result,1);
+    });
+    it('recursiveArgs', async function() {
+      hungryFetch.mockResponse('from', `
+      {args:{params:{p1:2}}}
+      >>>
+      $params.p1
+      `);
+      var {result} = await parseFetchAndJq(`
+      {urls:[{data:"data"}],args:{params:{p1:1}}}
+      >>>
+      {from:"from"} 
+      >>>
+      {p1From:.,p1:$params.p1}
+      `
+      );
+      assert.deepStrictEqual(result,{p1From:2,p1:1});
     });
     it('fetches contain hierarchy', async function() {
       hungryFetch.mockResponse('from0', `
