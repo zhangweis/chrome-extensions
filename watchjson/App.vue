@@ -11,7 +11,7 @@
     <div>
       <button style="font-size: 1.5em" @click="handleIt">Curl And JQ</button>
     </div>
-    <div v-html="contentHtml" id="content" style="max-height:75vh"></div>
+    <div v-html="contentHtml" id="content"></div>
     <div
       style="
         width: 20em;
