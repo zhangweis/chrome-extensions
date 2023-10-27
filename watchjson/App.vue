@@ -8,7 +8,10 @@
   <span v-if="!badge">Curl And JQ!</span>
       </h2>
     </div>
-    <div v-html="contentHtml"></div>
+    <div>
+      <button style="font-size: 1.5em" @click="handleIt">Curl And JQ</button>
+    </div>
+    <div v-html="contentHtml" id="content" style="max-height:75vh"></div>
     <div
       style="
         width: 20em;
@@ -24,7 +27,7 @@
         Script <span v-if="showText">^</span><span v-else>V</span>
       </div>
     </div>
-    <textarea style="" v-model="source" cols="80" rows="20" v-show="showText">
+    <textarea style="" v-model="source" cols="80" rows="20" v-show="showText" id="source">
     </textarea>
     <div v-show="showText">
       <div v-html="debugHtml"></div>
