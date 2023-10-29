@@ -8,8 +8,18 @@
   <span v-if="!badge">Curl And JQ!</span>
       </h2>
     </div>
-    <div>
+    <div
+      style="
+        width: 20em;
+        display: flex;
+        align-items: flex-end;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-content: space-between;
+      "
+    >
       <button style="font-size: 1.5em" @click="handleIt">Curl And JQ</button>
+      <button style="font-size: 1em" @click="copyJson">Copy Json</button>
     </div>
     <div v-html="contentHtml" id="content"></div>
     <div
@@ -95,6 +105,7 @@ export default {
       badge: "",
       title: "",
       content: {},
+      contentJson: "",
       contentHtml: "",
       fetchOptionHtml: "",
       debugHtml:"",
@@ -118,6 +129,9 @@ export default {
       }
       this.curlAndJq();
     },
+    async copyJson() {
+      this.$copyText(this.contentJson);alert('Copied');
+    },
     async curlAndJq() {
       clearTimeout(this.timeout);
       this.loading = true;
@@ -136,6 +150,8 @@ export default {
         this.badge = formatBadges(result.badge,{vsprintf,sprintf,forceArray});
         this.title = result.title;
         this.content = result.content||result;
+        let contentJson =JSON.stringify(this.content); 
+        this.contentJson = await jq.promised.raw(contentJson,".");
         this.contentHtml = tableify(this.content);
         this.fetchOptionHtml = linkify(tableify(originFetchOption), {
           escape: false,
