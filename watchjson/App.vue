@@ -105,7 +105,6 @@ export default {
       badge: "",
       title: "",
       content: {},
-      contentJson: "",
       contentHtml: "",
       fetchOptionHtml: "",
       debugHtml:"",
@@ -130,7 +129,9 @@ export default {
       this.curlAndJq();
     },
     async copyJson() {
-      this.$copyText(this.contentJson);alert('Copied');
+        let contentJson =JSON.stringify(this.content); 
+        contentJson = await jq.promised.raw(contentJson,".");
+      this.$copyText(contentJson);alert('Copied');
     },
     async curlAndJq() {
       clearTimeout(this.timeout);
@@ -150,8 +151,6 @@ export default {
         this.badge = formatBadges(result.badge,{vsprintf,sprintf,forceArray});
         this.title = result.title;
         this.content = result.content||result;
-        let contentJson =JSON.stringify(this.content); 
-        this.contentJson = await jq.promised.raw(contentJson,".");
         this.contentHtml = tableify(this.content);
         this.fetchOptionHtml = linkify(tableify(originFetchOption), {
           escape: false,
