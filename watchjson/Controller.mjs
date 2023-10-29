@@ -1,15 +1,22 @@
 async function parseFetchAndJq(filter1,context={},on={}) {
     var filter = filter1;
     const jq=context.jq;
-    async function fetchAndJq(fetchOption,context) {
-    const { imports = [], urls, jq: jqPath1="." } = fetchOption;
-    if (!urls) return {result:fetchOption,fetches:[fetchOption]};
+async function importFunctions(context,imports) {
     var importText = await Promise.all(
       imports.map(async (url) => {
         return (await fetchText(url, context)).content;
       })
     );
-    var jqPath = importText.join("") + jqPath1;
+    return importText.join("");
+}
+    async function fetchAndJq(fetchOption,context) {
+    const { imports = [],importsContext, urls, jq: jqPath1="." } = fetchOption;
+    if (importsContext) {
+      context.functions=await importFunctions(context, importsContext);
+    }
+    if (!urls) return {result:fetchOption,fetches:[fetchOption]};
+    var importText = await importFunctions(context,imports);
+    var jqPath = importText + jqPath1;
     var json = await Promise.all(
       urls.map(async (urlToGo) => {
         if (typeof urlToGo == "string") urlToGo = { url: urlToGo, method: "get" };

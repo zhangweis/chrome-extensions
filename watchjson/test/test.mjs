@@ -46,7 +46,29 @@ describe('parseFetchAndJq', function() {
       );
       assert.deepStrictEqual(result,1);
     });
-  describe('pureData', function() {
+    it('import as context functions', async function() {
+      hungryFetch.mockResponse('function.txt', `def abc:1;`);
+      var {result} = await parseFetchAndJq(`
+      {importsContext:["function.txt"]}
+      >>>
+      abc
+      `
+      );
+      assert.deepStrictEqual(result,1);
+    });
+/*    it('import as context functions keeps original value', async function() {
+      hungryFetch.mockResponse('function.txt', `def abc:1;`);
+      var {result} = await parseFetchAndJq(`
+      2>>>
+      {importsContext:["function.txt"]}
+      >>>
+      .
+      `
+      );
+      assert.deepStrictEqual(result,2);
+    });
+*/
+describe('pureData', function() {
     it('simplifiedPureData', async function() {
       var {result:resp} = await fetchAndJq({
         pure:1
