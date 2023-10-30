@@ -134,7 +134,7 @@ async function importFunctions(context,imports) {
     }
     var result = finalResult;
     if (result.functions) {
-      console.warn("functions used, use importsContext instead", fetchOption);
+//      console.warn("functions used, use importsContext instead", fetchOption);
       context.functions = result.functions;
     }
     return {result, fetchOptions, originFetchOption, fetches};
