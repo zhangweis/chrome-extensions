@@ -132,6 +132,7 @@ export default {
         let contentJson =JSON.stringify(this.content); 
         contentJson = await jq.promised.raw(contentJson,".");
       this.$copyText(contentJson);alert('Copied');
+      window.open(location.href.split('#')[0]+'#'+btoa(contentJson),"about:blank");
     },
     async curlAndJq() {
       clearTimeout(this.timeout);
