@@ -132,7 +132,7 @@ export default {
         let contentJson =JSON.stringify(this.content); 
         contentJson = await jq.promised.raw(contentJson,".");
       this.$copyText(contentJson);alert('Copied');
-      window.open(location.href.split('#')[0]+'#'+btoa(contentJson),"about:blank");
+      window.open(location.href.split('#')[0]+'#'+btoa(contentJson),"_blank");
     },
     async curlAndJq() {
       clearTimeout(this.timeout);
@@ -152,7 +152,10 @@ export default {
         this.badge = formatBadges(result.badge,{vsprintf,sprintf,forceArray});
         this.title = result.title;
         this.content = result.content||result;
-        this.contentHtml = tableify(this.content);
+        this.contentHtml = linkify(tableify(this.content), {
+          escape: false,
+          attributes:{target: "_blank"}
+        });
         this.fetchOptionHtml = linkify(tableify(originFetchOption), {
           escape: false,
         });

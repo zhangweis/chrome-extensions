@@ -112,7 +112,7 @@ async function importFunctions(context,imports) {
     var finalResult;
     var fetches;
     if (fetchOption.args) {
-      context.args=fetchOption.args;
+      context.args=Object.assign({},context.args,fetchOption.args);
     }
     if (fetchOption.from) {
       var {url,content} = await fetchText(fetchOption.from, context)

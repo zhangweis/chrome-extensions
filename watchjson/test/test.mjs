@@ -430,6 +430,17 @@ describe('pureData', function() {
       );
       assert.deepStrictEqual(result,1);
     });
+    it('argsCumulates', async function() {
+      var {result} = await parseFetchAndJq(`
+      {args:{p1:1}}
+      >>>
+      {args:{p2:2}}
+      >>>
+      [$p1,$p2]
+      `
+      );
+      assert.deepStrictEqual(result,[1,2]);
+    });
     it('recursiveArgs', async function() {
       hungryFetch.mockResponse('from', `
       {args:{params:{p1:2}}}
