@@ -146,6 +146,22 @@ describe('pureData', function() {
       )
       })()).to.be.rejectedWith(Error)
       });
+    it('error contains current baseUrl', async function() {
+      hungryFetch.mockResponse('http://site/a/retry-able', `text`,{
+        status:500
+      });
+      try {
+      await parseFetchAndJq(`
+      {
+        urls:[{url:"./retry-able"}]
+      }
+      `
+      ,{baseUrl:'http://site/a/a.jq.txt'})
+        chai.fail('no throw');
+      } catch (e) {
+        expect(e.message).to.include("a/retry-able");
+      }
+      });
     it('succeed only once', async function() {
       hungryFetch.mockResponse('retry-able', `text`);
       var {result} = await parseFetchAndJq(`

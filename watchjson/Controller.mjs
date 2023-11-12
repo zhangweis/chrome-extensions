@@ -48,8 +48,13 @@ async function importFunctions(context,imports) {
     }
   }
   async function fetchJsonOnce(urlToGo,context) {
-    const fetched = await fetch(getUrl(urlToGo.url,context), urlToGo);
+    const url = getUrl(urlToGo.url,context);
+    try {
+    const fetched = await fetch(url, urlToGo);
     if (fetched.status>=300) throw new Error(fetched.statusText);
+    } catch (e) {
+      throw new Error(`baseUrl:${context.baseUrl},url:${url},status:${e}`);
+    }
     const text = await fetched.text();
     var jsonContent;
     if (text[0]=='['||text[0]=='{') {
@@ -69,8 +74,12 @@ async function importFunctions(context,imports) {
   async function fetchText(url, context) {
     url = getUrl(url, context);
 
+    try {
     const content = await (await fetch(url)).text();
     return {content,url};
+    } catch (e) {
+      throw new Error(`baseUrl:${context.baseUrl},url:${url},status:${e}`);
+    }
   }
     const filters = filter.split('>>>');
     // const filters = [filter];
