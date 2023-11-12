@@ -52,9 +52,6 @@ async function importFunctions(context,imports) {
     try {
     const fetched = await fetch(url, urlToGo);
     if (fetched.status>=300) throw new Error(fetched.statusText);
-    } catch (e) {
-      throw new Error(`baseUrl:${context.baseUrl},url:${url},status:${e}`);
-    }
     const text = await fetched.text();
     var jsonContent;
     if (text[0]=='['||text[0]=='{') {
@@ -63,6 +60,9 @@ async function importFunctions(context,imports) {
       jsonContent = text;
     }
     return jsonContent;
+    } catch (e) {
+      throw new Error(`baseUrl:${context.baseUrl},url:${url},status:${e}`);
+    }
   }
   function getUrl(url,{baseUrl}={}){
     if (url.substring(0,5)=='data:') return url;
