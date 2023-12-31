@@ -197,6 +197,29 @@ describe('pureData', function() {
       );
       assert.deepStrictEqual(result,["text"]);
     });
+    it('supports post object as body', async function() {
+      hungryFetch.mockResponse('post', `{"ok":1}`);
+      var {result} = await parseFetchAndJq(`
+      {
+        urls:[{url:"post",body:{body:1}}]
+      }
+      `
+      );
+      const call = hungryFetch.singleCall();
+      expect(call.json()).to.deep.equal({body:1});
+
+      assert.deepStrictEqual(result,[{ok:1}]);
+    });
+/*    it('supports data urls', async function() {
+      var {result} = await parseFetchAndJq(`
+      {
+        urls:[{url:"data:text/plain;charset=utf-8;base64,dGV4dA=="}]
+      }
+      `
+      );
+      assert.deepStrictEqual(result,["text"]);
+    });
+*/
     it('error contains fetches when jq fails', async function() {
       hungryFetch.mockResponse('from', `{
         "data":"data"

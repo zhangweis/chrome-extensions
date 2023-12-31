@@ -20,6 +20,7 @@
     >
       <button style="font-size: 1.5em" @click="handleIt">Curl And JQ</button>
       <button style="font-size: 1em" @click="copyJson">Copy Json</button>
+      <button style="font-size: 1em" @click="openJson">Open Json</button>
     </div>
     <div v-html="contentHtml" id="content"></div>
     <div
@@ -128,11 +129,18 @@ export default {
       }
       this.curlAndJq();
     },
-    async copyJson() {
+    async toContentJson() {
         let contentJson =JSON.stringify(this.content); 
         contentJson = await jq.promised.raw(contentJson,".");
-      this.$copyText(contentJson);alert('Copied');
-      window.open(location.href.split('#')[0]+'#'+btoa(contentJson),"_blank");
+        return contentJson;
+    },
+    async copyJson() {
+        let contentJson = await this.toContentJson();
+        this.$copyText(contentJson);alert('Copied');
+    },
+    async openJson() {
+        let contentJson = await this.toContentJson();
+        window.open(location.href.split('#')[0]+'#'+btoa(contentJson),"_blank");
     },
     async curlAndJq() {
       clearTimeout(this.timeout);
