@@ -19,8 +19,8 @@
       "
     >
       <button style="font-size: 1.5em" @click="handleIt">Curl And JQ</button>
-      <button style="font-size: 1em" @click="copyJson">Copy Json</button>
-      <button style="font-size: 1em" @click="openJson">Open Json</button>
+      <button style="font-size: 1em" @click="copyJson">Copy</button>
+      <button style="font-size: 1em" @click="openJson">Open</button>
     </div>
     <div v-html="contentHtml" id="content"></div>
     <div
