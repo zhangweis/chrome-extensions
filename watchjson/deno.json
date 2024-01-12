@@ -1,4 +1,6 @@
 {
   "imports": {
+    "force-array": "npm:force-array@3",
+    "sprintf-js":"npm:sprintf-js@1"
   }
 }
