@@ -8,8 +8,6 @@ import chai,{expect} from 'chai';
 //import jq from "jq-web";
 import jq from "../jq.asm.bundle1.js";
 import chaiAsPromised from 'chai-as-promised';
-import forceArray from "force-array";
-import {vsprintf,sprintf} from 'sprintf-js';
 import {
   afterEach,
   beforeEach,
@@ -23,7 +21,7 @@ async function parseFetchAndJq(filter,context={},on) {
   return await originParse(filter,{...context,jq},on);
 }
 function formatBadges(badges) {
-  return orginFormatBadges(badges, {forceArray, vsprintf,sprintf});
+  return orginFormatBadges(badges);
 }
 hungryFetch.mockResponse('http://good.com/', {
   data: 'some data'
