@@ -7,5 +7,5 @@ const args = parse(Deno.args);
 const stdinContent = await Deno.readAll(Deno.stdin);
 const input = new TextDecoder().decode(stdinContent);
 var {result} =await parseFetchAndJq(input,{jq});
-if (result.badge) {result.formattedBadges = formatBadges(result.badge,{vsprintf,sprintf,forceArray});if (!args.k)delete result.badge} 
+if (result.badge) {result.formattedBadges = await formatBadges(result.badge,{vsprintf,sprintf,forceArray});if (!args.k)delete result.badge} 
 console.log(JSON.stringify(result));

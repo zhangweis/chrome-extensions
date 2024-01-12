@@ -20,7 +20,7 @@ chai.use(chaiAsPromised);
 async function parseFetchAndJq(filter,context={},on) {
   return await originParse(filter,{...context,jq},on);
 }
-function formatBadges(badges) {
+async function formatBadges(badges) {
   return orginFormatBadges(badges);
 }
 hungryFetch.mockResponse('http://good.com/', {
@@ -570,19 +570,19 @@ describe('pureData', function() {
   });
   describe('formatBadges', function() {
     it('supports string', async function() {
-      var result = formatBadges('string');
+      var result = await formatBadges('string');
       assert.deepStrictEqual(['string'], result);
     });
     it('support string array', async function() {
-      var result = formatBadges(['s1','s2']);
+      var result = await formatBadges(['s1','s2']);
       assert.deepStrictEqual(['s1','s2'], result);
     });
     it('supports number', async function() {
-      var result = formatBadges(1);
+      var result = await formatBadges(1);
       assert.deepStrictEqual(['1'], result);
     });
     it('supports number format', async function() {
-      var result = formatBadges([['%.2f',0.3]]);
+      var result = await formatBadges([['%.2f',0.3]]);
       assert.deepStrictEqual(['0.30'], result);
     });
   });

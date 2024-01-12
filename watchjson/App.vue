@@ -155,7 +155,7 @@ export default {
           )
           .join("");
 */
-        this.badge = formatBadges(result.badge);
+        this.badge = await formatBadges(result.badge);
         this.title = result.title;
         this.content = result.content||result;
         this.contentHtml = linkify(tableify(this.content), {
