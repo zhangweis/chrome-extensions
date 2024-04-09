@@ -50,7 +50,7 @@ async function importFunctions(context,imports) {
   async function fetchJsonOnce(urlToGo,context) {
     const url = getUrl(urlToGo.url,context);
     try {
-    const fetched = await fetch(url, urlToGo);
+    const fetched = await fetch(url, Object.assign({signal: signalTimeout(context)},urlToGo));
     if (fetched.status>=300) throw new Error(fetched.statusText);
     const text = await fetched.text();
     var jsonContent;
@@ -64,6 +64,9 @@ async function importFunctions(context,imports) {
       throw new Error(`baseUrl:${context.baseUrl},url:${url},status:${e}`);
     }
   }
+function signalTimeout(context) {
+  return AbortSignal.timeout(context.timeout||5000); 
+}
   function getUrl(url,{baseUrl}={}){
     if (url.substring(0,5)=='data:') return url;
     if (baseUrl) {
@@ -75,7 +78,7 @@ async function importFunctions(context,imports) {
     url = getUrl(url, context);
 
     try {
-    const content = await (await fetch(url)).text();
+    const content = await (await fetch(url,{signal: signalTimeout(context)})).text();
     return {content,url};
     } catch (e) {
       throw new Error(`baseUrl:${context.baseUrl},url:${url},status:${e}`);
