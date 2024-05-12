@@ -138,7 +138,7 @@ export default {
     },
     async openJson() {
         let contentJson = await this.toContentJson();
-        window.open(location.href.split('#')[0]+'#'+btoa(contentJson),"_blank");
+        window.open(location.href.split('#')[0]+'#'+btoa(contentJson+">>>\n"),"_blank");
     },
     async curlAndJq() {
       clearTimeout(this.timeout);
