@@ -1,13 +1,15 @@
 import { fileURLToPath, URL } from 'node:url'
 
 import { defineConfig } from 'vite'
+import viteDeno from "https://deno.land/x/vite_deno_plugin@v0.9.4/mod.ts";
+
 import vue from '@vitejs/plugin-vue'
 import { viteSingleFile } from "vite-plugin-singlefile"
 
 // https://vitejs.dev/config/
 export default defineConfig({
   base:'./',
-  plugins: [vue()
+  plugins: [vue(),viteDeno({})
   , viteSingleFile()
 ],
   build: {
