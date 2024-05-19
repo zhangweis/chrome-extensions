@@ -1,3 +1,4 @@
+//deno run -A npm:vite build --config ./vite.config.mjs
 import { fileURLToPath, URL } from 'node:url'
 
 import { defineConfig } from 'vite'
