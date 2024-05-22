@@ -343,6 +343,21 @@ describe('pureData', function() {
       );
       assert.deepStrictEqual(result,[{param1:1}]);
     });
+   it('from supports storeAs', async function() {
+      hungryFetch.mockResponse('from', `{
+        urls:[{data:.}]
+      }
+      `);
+      var {options,result} = await parseFetchAndJq(`{
+        from:"from",asArg:"a",params:{param1:1}
+      }
+      >>>
+      $a
+      `
+      );
+      assert.deepStrictEqual(result,[{param1:1}]);
+    });
+
 });
 
   describe('multiple segments', function() {

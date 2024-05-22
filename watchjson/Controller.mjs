@@ -146,6 +146,11 @@ function signalTimeout(context) {
     if (fetchOption.add) {
       finalResult = await callJq([finalResult, fetchOption.add],'add');
     }
+    if (fetchOption.asArg) {
+      const arg = {};
+      arg[fetchOption.asArg]=finalResult;
+      context.args=Object.assign({},context.args,arg);
+    }
     var result = finalResult;
     if (result.functions) {
 //      console.warn("functions used, use importsContext instead", fetchOption);
