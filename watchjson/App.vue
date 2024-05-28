@@ -140,8 +140,19 @@ export default {
         let contentJson = await this.toContentJson();
         this.$copyText(contentJson);alert('Copied');
     },
+    replaceFrom(jsonString) {
+      let json=JSON.parse(jsonString);
+      if (json.from) {
+        json["_from"]=json.from;
+        delete json.from;
+        return JSON.stringify(json);
+      } else {
+        return jsonString;
+      }
+    },
     async openJson() {
-        let contentJson = await this.toContentJson();
+        let contentJson = this.replaceFrom(await this.toContentJson());
+        
         window.open(location.href.split('#')[0]+'#'+btoa(contentJson+">>>\n"),"_blank");
     },
     async curlAndJq() {
