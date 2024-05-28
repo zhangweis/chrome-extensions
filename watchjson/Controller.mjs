@@ -96,14 +96,10 @@ function signalTimeout(context) {
     }
     var fetches = results.map(r=>r.fetches);
 
-    var normalizedFroms = results.reduce((s,r)=>{
-      return s.concat(r.originFetchOption.normalizedFroms);
-    },[]);
     if (results.length==1){
       fetches=fetches[0];
     }
-    last.originFetchOption.normalizedFroms=normalizedFroms;
-    return {...last,fetches,normalizedFroms};
+    return {...last,fetches};
   async function parseFetchAndJqSingle(filter,context,on) {
     filter=(context.functions||"")+filter;
     let fetchOption = await callJq(on, filter,context);
@@ -120,7 +116,7 @@ function signalTimeout(context) {
     return Object.assign(ret,{result:results});
   }
   async function parseFetchAndJqSingleElement(fetchOption,context,on) {
-    let originFetchOption = { ...fetchOption,normalizedFroms:[] };
+    let originFetchOption = { ...fetchOption};
     var fetchOptions = [fetchOption];
       
     var finalResult;
@@ -130,9 +126,10 @@ function signalTimeout(context) {
     }
     if (fetchOption.from) {
       var {url,content} = await fetchText(fetchOption.from, context)
+      context.normalizedFroms=(context.normalizedFroms||[]);
+      context.normalizedFroms.push(url);
       const {originFetchOption:options,result,fetches:fetches1} = await parseFetchAndJq(content,{...context,baseUrl:url},fetchOption.params||on);
       fetches = fetches1;
-      originFetchOption.normalizedFroms=[url];
       finalResult = result;
       if (fetchOption.fromjq){
         finalResult = await callJq(finalResult, fetchOption.fromjq);
@@ -156,7 +153,7 @@ function signalTimeout(context) {
 //      console.warn("functions used, use importsContext instead", fetchOption);
       context.functions = result.functions;
     }
-    return {result, fetchOptions, originFetchOption, fetches};
+    return {result, fetchOptions, originFetchOption, fetches, context};
   }
   async function callJq(json, filter, context) {
     var flags = ['-c'];

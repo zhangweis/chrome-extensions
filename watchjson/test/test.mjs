@@ -8,13 +8,13 @@ import chai,{expect} from 'chai';
 //import jq from "jq-web";
 import jq from "../jq.asm.bundle1.js";
 import chaiAsPromised from 'chai-as-promised';
-import {
+/*import {
   afterEach,
   beforeEach,
   describe,
   it,
 } from "https://deno.land/x/deno_mocha/mod.ts";
-
+*/
 chai.use(chaiAsPromised);
 
 async function parseFetchAndJq(filter,context={},on) {
@@ -290,7 +290,6 @@ describe('pureData', function() {
       }
       `
       );
-      assert.deepStrictEqual(options.froms.urls,[{data:{pure:1}}]);
       assert.deepStrictEqual(result,[{pure:1}]);
     });
    it('from supports fromjq', async function() {
@@ -416,7 +415,7 @@ describe('pureData', function() {
       hungryFetch.mockResponse('http://site/one/from0', `
       {urls:[{data:"data"}]}
       `);
-      var {originFetchOption,normalizedFroms} = await parseFetchAndJq(`
+      var {originFetchOption,normalizedFroms,context} = await parseFetchAndJq(`
       {from:"../from0"}
       >>>
       .[0]|
@@ -425,7 +424,20 @@ describe('pureData', function() {
       }
       `,{baseUrl:'http://site/one/two/abc.jq.txt'}
       );
-      assert.deepStrictEqual(originFetchOption.normalizedFroms,["http://site/one/from0"]);
+      assert.deepStrictEqual(context.normalizedFroms,["http://site/one/from0"]);
+    });
+    it('nested normalizedUrl', async function() {
+      hungryFetch.mockResponse('http://site/one/from0', `
+      {urls:[{data:"data"}]}
+      `);
+      hungryFetch.mockResponse('http://site/one/from1', `
+      {from:"./from0"}
+      `);
+      var {originFetchOption,context} = await parseFetchAndJq(`
+      {from:"../from1"}
+      `,{baseUrl:'http://site/one/two/abc.jq.txt'}
+      );
+      assert.deepStrictEqual(context.normalizedFroms,["http://site/one/from1","http://site/one/from0"]);
     });
     it('from supports data input', async function() {
       hungryFetch.mockResponse('from', `

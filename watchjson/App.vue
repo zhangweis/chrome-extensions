@@ -43,7 +43,10 @@
     <div v-show="showText">
       <div v-html="debugHtml"></div>
       <hr/>
-      <div v-html="fetchOptionHtml" v-show="showText"></div>
+      <div v-html="fromsHtml" v-show="showText"></div>
+<!--
+  <div v-html="fetchOptionHtml" v-show="showText"></div>
+-->
     </div>
   </div>
 </template>
@@ -106,6 +109,7 @@ export default {
       content: {},
       contentHtml: "",
       fetchOptionHtml: "",
+      fromsHtml:"",
       debugHtml:"",
       isRefreshing:false,
       source,
@@ -144,7 +148,7 @@ export default {
       clearTimeout(this.timeout);
       this.loading = true;
       try {
-        var {result, fetches, fetchOptions, originFetchOption} = await parseFetchAndJq(this.source,{jq});
+        var {result, fetches, fetchOptions, originFetchOption, context} = await parseFetchAndJq(this.source,{jq});
         var styles = [].concat.apply([],fetchOptions.map(({styles = []})=>styles));
         this.style = styles;
 /*
@@ -158,6 +162,10 @@ export default {
         this.badge = await formatBadges(result.badge);
         this.title = result.title;
         this.content = result.content||result;
+        this.fromsHtml = linkify(tableify(context.normalizedFroms), {
+          escape: false,
+          attributes:{target: "_blank"}
+        });
         this.contentHtml = linkify(tableify(this.content), {
           escape: false,
           attributes:{target: "_blank"}
