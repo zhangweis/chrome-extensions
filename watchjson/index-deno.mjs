@@ -2,10 +2,21 @@ import jq from "https://raw.githubusercontent.com/zhangweis/deno-tools/main/jq.a
 import { getStdin } from 'https://deno.land/x/get_stdin@v1.1.0/mod.ts';
 import {parseFetchAndJq,formatBadges} from "./Controller.mjs";
 import { parse } from "https://deno.land/std@0.213.0/flags/mod.ts";
-import fetchCached from 'npm:fetch-cached';
-const fetchImpl = fetchCached({
-  fetch: fetch,
-  new Map()
+import fetchCached from 'npm:fetch-cached@2.0.3';
+function promisifySync(o) {
+  const ret = {};
+  for (const key of Object.getOwnPropertyNames(Object.getPrototypeOf(o))) {
+    if (typeof o[key]=="function") {
+      ret[key]=()=> 
+         Promise.resolve(o[key].apply(o, arguments));
+    }
+  }
+  return ret;
+}
+const cache = promisifySync(new Map());
+const fetchImpl = fetchCached.default({
+  fetch,
+  cache
 });
 
 const args = parse(Deno.args);
