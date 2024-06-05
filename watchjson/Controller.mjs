@@ -3,6 +3,7 @@ import forceArray from "https://jspm.dev/force-array";
 async function parseFetchAndJq(filter1,context={},on={}) {
     var filter = filter1;
     const jq=context.jq;
+  const fetchImpl = context.fetch||fetch;
 async function importFunctions(context,imports) {
     var importText = await Promise.all(
       imports.map(async (url) => {
@@ -52,7 +53,7 @@ async function importFunctions(context,imports) {
   async function fetchJsonOnce(urlToGo,context) {
     const url = getUrl(urlToGo.url,context);
     try {
-    const fetched = await fetch(url, Object.assign({signal: signalTimeout(context)},urlToGo));
+    const fetched = await fetchImpl(url, Object.assign({signal: signalTimeout(context)},urlToGo));
     if (fetched.status>=300) throw new Error(fetched.statusText);
     const text = await fetched.text();
     var jsonContent;
@@ -80,7 +81,7 @@ function signalTimeout(context) {
     url = getUrl(url, context);
 
     try {
-    const content = await (await fetch(url,{signal: signalTimeout(context)})).text();
+    const content = await (await fetchImpl(url,{signal: signalTimeout(context)})).text();
     return {content,url};
     } catch (e) {
       throw new Error(`baseUrl:${context.baseUrl},url:${url},status:${e}`);
