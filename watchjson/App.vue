@@ -75,7 +75,7 @@ import setLocationHash from "set-location-hash";
 import linkify from "html-linkify";
 import Loading from "vue-loading-overlay";
 import "vue-loading-overlay/dist/css/index.css";
-
+import titleize from 'titleize';
 var oldTitle = document.title;
 export default {
   components: {
@@ -171,6 +171,11 @@ export default {
           .join("");
 */
         this.badge = await formatBadges(result.badge);
+        if (!result.content&&context.normalizedFroms.length>0) {
+          const fileName = (new URL(context.normalizedFroms[0]).pathname.split('/').pop()).split('.')[0];
+          const title = titleize(fileName);
+          result = {title,content:result};
+        }
         this.title = result.title;
         this.content = result.content||result;
         this.fromsHtml = linkify(tableify(context.normalizedFroms), {
