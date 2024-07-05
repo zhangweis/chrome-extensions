@@ -113,7 +113,7 @@ function signalTimeout(context) {
     }
     var results = result.map(r=>r.result);
     if (isSingle) results=results[0];
-    var ret = result.pop();
+    var ret = result.length>0?result.pop():{fetchOptions:[{}],context};
     return Object.assign(ret,{result:results});
   }
   async function parseFetchAndJqSingleElement(fetchOption,context,on) {
@@ -166,8 +166,8 @@ function signalTimeout(context) {
         flags.push(JSON.stringify(args[key]));
       }
     }
-
-    return JSON.parse(await jq.promised.raw(JSON.stringify(json), filter, flags));
+    var result = await jq.promised.raw(JSON.stringify(json), filter, flags);
+    return JSON.parse(result);
   }
   }
 async function formatBadges(badges,{}={}) {

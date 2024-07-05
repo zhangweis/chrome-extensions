@@ -356,6 +356,14 @@ describe('pureData', function() {
       );
       assert.deepStrictEqual(result,[{param1:1}]);
     });
+   it('supports empty array', async function() {
+      var {context,fetchOptions,result} = await parseFetchAndJq(`[]
+      `
+      );
+      assert.deepStrictEqual(fetchOptions,[{}]);
+      assert(context);
+      assert.deepStrictEqual(result,[]);
+    });
 
 });
 
