@@ -1,7 +1,8 @@
 import jq from "https://raw.githubusercontent.com/zhangweis/deno-tools/main/jq.asm.bundle.js"
 import { getStdin } from 'https://deno.land/x/get_stdin@v1.1.0/mod.ts';
 import {parseFetchAndJq,formatBadges} from "./Controller.mjs";
-import { parse } from "https://deno.land/std@0.213.0/flags/mod.ts";
+import { parseArgs } from "jsr:@std/cli/parse-args";
+import timespan from 'npm:timespan-parser@1.2.0';
 import fetchCached from 'npm:fetch-cached@2.0.3';
 function promisifySync(o) {
   const ret = {};
@@ -19,8 +20,8 @@ const fetchImpl = fetchCached.default({
   cache
 });
 
-const args = parse(Deno.args);
+const args = parseArgs(Deno.args,{default:{timeout:"10s"}});
 const input = await getStdin({exitOnEnter: false});
-var {result} =await parseFetchAndJq(input,{jq,fetch:fetchImpl});
+var {result} =await parseFetchAndJq(input,{jq,fetch:fetchImpl,timeout:timespan.parse(args.timeout,"msec")});
 if (result.badge) {result.formattedBadges = await formatBadges(result.badge);if (!args.k)delete result.badge} 
 console.log(JSON.stringify(result));
