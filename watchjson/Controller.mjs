@@ -108,9 +108,7 @@ function signalTimeout(context) {
     let isSingle = !Array.isArray(fetchOptions);
     if (isSingle) {fetchOptions=[fetchOptions];}
     var result = [];
-    for (const [i, option] of fetchOptions.entries()) {
-      result.push(await parseFetchAndJqSingleElement(option,context,on));
-    }
+    result = await Promise.all(fetchOptions.map(option=>parseFetchAndJqSingleElement(option,context,on)));
     var results = result.map(r=>r.result);
     if (isSingle) results=results[0];
     var ret = result.length>0?result.pop():{fetchOptions:[{}],context};
