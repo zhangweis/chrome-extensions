@@ -1,5 +1,5 @@
-import {vsprintf,sprintf} from 'https://jspm.dev/sprintf-js';
-import forceArray from "https://jspm.dev/force-array";
+import {vsprintf,sprintf} from 'https://esm.sh/sprintf-js';
+import forceArray from "https://esm.sh/force-array";
 async function parseFetchAndJq(filter1,context={},on={}) {
     var filter = filter1;
     const jq=context.jq;
@@ -68,7 +68,7 @@ async function importFunctions(context,imports) {
     }
   }
 function signalTimeout(context) {
-  return AbortSignal.timeout(context.timeout||5000); 
+  return AbortSignal.timeout(context.timeout||30000); 
 }
   function getUrl(url,{baseUrl}={}){
     if (url.substring(0,5)=='data:') return url;
