@@ -1,5 +1,5 @@
-import {vsprintf,sprintf} from 'https://esm.sh/sprintf-js';
-import forceArray from "https://esm.sh/force-array";
+import {sprintf} from 'https://esm.sh/sprintf-js@1.1.3';
+import forceArray from "https://esm.sh/force-array@3.1.0";
 async function parseFetchAndJq(filter1,context={},on={}) {
     var filter = filter1;
     const jq=context.jq;
