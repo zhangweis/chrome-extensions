@@ -2,11 +2,11 @@
 import assert from 'node:assert';
 import {parseFetchAndJq as originParse, formatBadges as orginFormatBadges} from "../Controller.mjs";
 //import hungryFetch from './hungry-fetch.js';
-import * as hungryFetch from 'https://jspm.dev/hungry-fetch';
+import * as hungryFetch from 'https://esm.sh/hungry-fetch@0.9.2';
 import mockdate from 'mockdate'
 import chai,{expect} from 'chai';
 //import jq from "jq-web";
-import jq from "../jq.asm.bundle1.js";
+import jq from "https://raw.githubusercontent.com/zhangweis/deno-tools/main/jq.asm.bundle.js";
 import chaiAsPromised from 'chai-as-promised';
 /*import {
   afterEach,
