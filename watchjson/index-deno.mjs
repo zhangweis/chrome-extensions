@@ -20,7 +20,7 @@ const fetchImpl = fetchCached.default({
   cache
 });
 
-const args = parseArgs(Deno.args,{default:{timeout:"10s"}});
+const args = parseArgs(Deno.args,{default:{timeout:"30s"}});
 const input = await getStdin({exitOnEnter: false});
 var {result} =await parseFetchAndJq(input,{jq,fetch:fetchImpl,timeout:timespan.parse(args.timeout,"msec")});
 if (result.badge) {result.formattedBadges = await formatBadges(result.badge);if (!args.k)delete result.badge} 
