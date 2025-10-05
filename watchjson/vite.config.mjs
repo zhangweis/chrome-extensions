@@ -2,7 +2,7 @@
 import { fileURLToPath, URL } from 'node:url'
 
 import { defineConfig } from 'vite'
-import viteDeno from "https://deno.land/x/vite_deno_plugin@v0.9.4/mod.ts";
+import deno from "npm:@deno/vite-plugin@1"
 
 import vue from '@vitejs/plugin-vue'
 import { viteSingleFile } from "vite-plugin-singlefile"
@@ -10,7 +10,7 @@ import { viteSingleFile } from "vite-plugin-singlefile"
 // https://vitejs.dev/config/
 export default defineConfig({
   base:'./',
-  plugins: [vue(),viteDeno({})
+  plugins: [vue(),deno({})
   , viteSingleFile()
 ],
   build: {
