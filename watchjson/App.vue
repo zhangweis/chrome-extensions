@@ -77,6 +77,16 @@ import Loading from "vue-loading-overlay";
 import "vue-loading-overlay/dist/css/index.css";
 import titleize from 'titleize';
 var oldTitle = document.title;
+const rxCommonMarkLink = /(\[([^\]]+)])\(([^)]+)\)/g;
+
+function commonMarkLinkToAnchorTag(md) {
+  const anchor = md
+    ? md.replace( rxCommonMarkLink , '<a href="$3"> $2 </a>' )
+    : md
+    ;
+  return anchor;
+}
+
 export default {
   components: {
     Loading,
@@ -182,7 +192,8 @@ export default {
           escape: false,
           attributes:{target: "_blank"}
         });
-        this.contentHtml = linkify(tableify(this.content), {
+        var html = commonMarkLinkToAnchorTag(tableify(this.content)); 
+        this.contentHtml = linkify(html, {
           escape: false,
           attributes:{target: "_blank"}
         });
