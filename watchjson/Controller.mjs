@@ -13,10 +13,12 @@ async function importFunctions(context,imports) {
     return importText.join("");
 }
     async function fetchAndJq(fetchOption,context) {
-    const { imports = [],importsContext, urls, jq: jqPath1="." } = fetchOption;
+    const {asIs, imports = [],importsContext, urls, jq: jqPath1="." } = fetchOption;
+
     if (importsContext) {
       context.functions=(context.functions||"")+await importFunctions(context, importsContext);
     }
+    if (asIs) return {result:asIs, fetches:[]};
     if (!urls) return {result:fetchOption,fetches:[fetchOption]};
     var importText = await importFunctions(context,imports);
     var jqPath = importText + jqPath1;
