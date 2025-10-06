@@ -596,6 +596,25 @@ describe('pureData', function() {
       );
       assert.deepStrictEqual(result,["data"]);
     });
+    it('from wont lose styles', async function() {
+      hungryFetch.mockResponse('http://site/one/from0', `
+      {
+        from:"./from1"
+      }
+      `);
+
+      hungryFetch.mockResponse('http://site/one/from1', `
+      {
+        styles:{td:"padding:1"}
+      }
+      `);
+
+      var {result} = await parseFetchAndJq(`
+      {from:"http://site/one/from0"}
+      `
+      );
+      assert.deepStrictEqual(result,{styles:{td:"padding:1"}});
+    });
     it('multiple supports function', async function() {
       var {result} = await parseFetchAndJq(`
       {urls:[{data:{functions:"def abc:1;"}}],

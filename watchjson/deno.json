@@ -1,6 +1,6 @@
 {
   "tasks": {
-    "serve": "deno run -A npm:vite serve --config ./vite.config.mjs",
+    "serve": "deno run -A npm:vite serve --config ./vite.config.mjs --host 0.0.0.0",
     "preview": "deno run -A npm:vite preview --config ./vite.config.mjs",
     "build": "deno run -A npm:vite build --config ./vite.config.mjs",
     "test": "deno run -A npm:mocha ./test/test.mjs --timeout 5000"

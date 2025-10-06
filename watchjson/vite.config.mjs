@@ -1,6 +1,6 @@
 //deno run -A npm:vite build --config ./vite.config.mjs
 import { fileURLToPath, URL } from 'node:url'
-
+import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import { defineConfig } from 'vite'
 import deno from "npm:@deno/vite-plugin@1"
 
@@ -10,22 +10,7 @@ import { viteSingleFile } from "vite-plugin-singlefile"
 // https://vitejs.dev/config/
 export default defineConfig({
   base:'./',
-  plugins: [vue(),deno({})
+  plugins: [vue(),nodePolyfills(),deno({})
   , viteSingleFile()
 ],
-  build: {
-    rollupOptions: {
-      output: {
-        entryFileNames: `assets/[name].js`,
-        chunkFileNames: `assets/[name].js`,
-        assetFileNames: `assets/[name].[ext]`
-      }
-    }
-  }
-,
-  resolve: {
-    alias: {
-//      '@': fileURLToPath(new URL('./src', import.meta.url))
-    }
-  }
 })

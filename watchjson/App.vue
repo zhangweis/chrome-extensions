@@ -1,5 +1,8 @@
 <template>
   <div id="main" :style="style">
+    <component is="style" v-for="(value, key) in elementStyles" :key="key">
+        {{ key }} {{ value }}
+    </component>
     <component :is="`style`">
       <template v-for="cssItem in css">
 
@@ -61,13 +64,6 @@
 div#main {
   font-size: 3em;
 }
-
-@media (min-width: 1000px) {
-  div#main {
-    font-size: 1.5em;
-  }
-}
-
 h2 span:not(:first-child):before {
   content: " | ";
 }
@@ -81,6 +77,7 @@ import tableify from "tableify";
 // import * as setQuery from "set-query-string";
 import setLocationHash from "set-location-hash";
 import linkify from "html-linkify";
+import {linkify as markdownLinkify} from "linkify-markdown";
 import Loading from "vue-loading-overlay";
 import "vue-loading-overlay/dist/css/index.css";
 import titleize from 'titleize';
@@ -88,9 +85,11 @@ var oldTitle = document.title;
 const rxCommonMarkLink = /(\[([^\]]+)])\(([^)]+)\)/g;
 
 function commonMarkLinkToAnchorTag(md) {
-  const anchor = md
-    ? md.replace( rxCommonMarkLink , '<a href="$3"> $2 </a>' )
-    : md
+  
+  const anchor = markdownLinkify(md, {
+  strong: true,
+  repository: 'https://github.com/nitin42/cli-test-repo'
+}).replace( rxCommonMarkLink , '<a href="$3" target="_blank"> $2 </a>' )
     ;
   return anchor;
 }
@@ -139,6 +138,7 @@ export default {
       css:[],
       error:"",
       style: "",
+      elementStyles:{}
     };
   },
   async created() {
@@ -187,12 +187,13 @@ export default {
       this.error = "";
       try {
         var {result, fetches, fetchOptions, originFetchOption, context} = await parseFetchAndJq(this.source,{jq});
-        var styles = [].concat.apply([],fetchOptions.map(({styles = []})=>styles));
+        var styles = [].concat.apply([],fetchOptions.map(({_styles = []})=>Array.isArray(_styles)?_styles:[]));
+        this.style = styles;
+        this.elementStyles = (result.styles||{});
         var css = [].concat.apply([],fetchOptions.map(({css = []})=>css));
         css = css.concat(forceArray(result.css||[]));
         console.log({css})
         this.css = css;
-        this.style = styles;
 /*
           .map((s) =>
             s.content
@@ -214,10 +215,8 @@ export default {
           attributes:{target: "_blank"}
         });
         var html = commonMarkLinkToAnchorTag(tableify(this.content)); 
-        this.contentHtml = linkify(html, {
-          escape: false,
-          attributes:{target: "_blank"}
-        });
+//        this.contentHtml = linkify(html, {escape: false,attributes:{target: "_blank"}});
+        this.contentHtml = html;
         this.fetchOptionHtml = linkify(tableify(originFetchOption), {
           escape: false,
         });
