@@ -48,7 +48,7 @@
         Script <span v-if="showText">^</span><span v-else>V</span>
       </a>
     </div>
-    <textarea style="" v-model="source" cols="80" rows="20" v-show="showText" id="source">
+    <textarea style="font-size: 0.8em" v-model="source" cols="80" rows="20" v-show="showText" id="source">
     </textarea>
     <div v-show="showText">
       <div v-html="debugHtml"></div>
