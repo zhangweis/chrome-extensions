@@ -1,14 +1,21 @@
 <template>
   <div id="main" :style="style">
-    <loading :active.sync="loading" :is-full-page="true"></loading>
+    <component :is="`style`">
+      <template v-for="cssItem in css">
 
-    <div>
+    {{cssItem}}
+      </template>
+    </component>
+
+    <loading :active.sync="loading" :is-full-page="true"></loading>
+    <pre v-if="error" class='error'>{{error}}</pre>
+    <div class='headers'>
       <h2>
         {{ title&&(title+" - ") }}<span v-for="item in badge" :key="item">{{ item }}</span>
   <span v-if="!badge">Curl And JQ!</span>
       </h2>
     </div>
-    <div
+    <div class='actions-top'
       style="
         width: 20em;
         display: flex;
@@ -34,9 +41,9 @@
       "
     >
       <button style="font-size: 2em" @click="handleIt">Curl And JQ</button>
-      <div @click="showText = !showText">
+      <a @click="showText = !showText">
         Script <span v-if="showText">^</span><span v-else>V</span>
-      </div>
+      </a>
     </div>
     <textarea style="" v-model="source" cols="80" rows="20" v-show="showText" id="source">
     </textarea>
@@ -69,6 +76,7 @@ h2 span:not(:first-child):before {
 import jq from "jq-web";
 import queryString from "query-string";
 import {parseFetchAndJq, formatBadges} from "./Controller";
+import forceArray from "force-array";
 import tableify from "tableify";
 // import * as setQuery from "set-query-string";
 import setLocationHash from "set-location-hash";
@@ -85,6 +93,11 @@ function commonMarkLinkToAnchorTag(md) {
     : md
     ;
   return anchor;
+}
+if(typeof String.prototype.replaceAll === "undefined") {
+    String.prototype.replaceAll = function(match, replace) {
+       return this.replace(new RegExp(match, 'g'), () => replace);
+    }
 }
 
 export default {
@@ -123,6 +136,8 @@ export default {
       debugHtml:"",
       isRefreshing:false,
       source,
+      css:[],
+      error:"",
       style: "",
     };
   },
@@ -167,10 +182,16 @@ export default {
     },
     async curlAndJq() {
       clearTimeout(this.timeout);
+      const lastOriginFetchOption = this.originFetchOption;
       this.loading = true;
+      this.error = "";
       try {
         var {result, fetches, fetchOptions, originFetchOption, context} = await parseFetchAndJq(this.source,{jq});
         var styles = [].concat.apply([],fetchOptions.map(({styles = []})=>styles));
+        var css = [].concat.apply([],fetchOptions.map(({css = []})=>css));
+        css = css.concat(forceArray(result.css||[]));
+        console.log({css})
+        this.css = css;
         this.style = styles;
 /*
           .map((s) =>
@@ -210,7 +231,8 @@ export default {
       } catch (e) {
         console.trace(e);
         if (e.fetchOption) this.originFetchOption = e.fetchOption;
-        if (!this.isRefreshing)alert(e.stack||e);
+        else this.originFetchOption = lastOriginFetchOption;
+        this.error=(e.stack||e);
       } finally {
         var refresh=(this.originFetchOption||{}).refresh;
         if (refresh) {

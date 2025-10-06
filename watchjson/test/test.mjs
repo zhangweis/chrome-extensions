@@ -67,6 +67,12 @@ describe('parseFetchAndJq', function() {
     });
 */
 describe('pureData', function() {
+    it('asIs', async function() {
+      var {result:resp} = await fetchAndJq({asIs:{
+        pure:1
+      }});
+      assert.deepStrictEqual({pure:1}, resp);
+    });
     it('simplifiedPureData', async function() {
       var {result:resp} = await fetchAndJq({
         pure:1
