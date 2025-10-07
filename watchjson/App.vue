@@ -77,7 +77,7 @@ import tableify from "tableify";
 // import * as setQuery from "set-query-string";
 import setLocationHash from "set-location-hash";
 import linkify from "html-linkify";
-import {linkify as markdownLinkify} from "linkify-markdown";
+import markdownLinkify from "markdown-linkify";
 import Loading from "vue-loading-overlay";
 import "vue-loading-overlay/dist/css/index.css";
 import titleize from 'titleize';
@@ -85,11 +85,11 @@ var oldTitle = document.title;
 const rxCommonMarkLink = /(\[([^\]]+)])\(([^)]+)\)/g;
 
 function commonMarkLinkToAnchorTag(md) {
-  
-  const anchor = markdownLinkify(md, {
-  strong: true,
-  repository: 'https://github.com/nitin42/cli-test-repo'
-}).replace( rxCommonMarkLink , '<a href="$3" target="_blank"> $2 </a>' )
+   
+  var anchor = md;
+  if (!md.match(rxCommonMarkLink)) 
+    anchor = markdownLinkify(md);
+  anchor = anchor.replace( rxCommonMarkLink , '<a href="$3" target="_blank"> $2 </a>' )
     ;
   return anchor;
 }
