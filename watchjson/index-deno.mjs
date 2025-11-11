@@ -1,9 +1,12 @@
-import jq from "https://raw.githubusercontent.com/zhangweis/deno-tools/main/jq.asm.bundle.js"
+import jqInit from "./jq.js";
+import jqWasm from './jq.wasm' with { type: "bytes" };
 import { getStdin } from 'https://deno.land/x/get_stdin@v1.1.0/mod.ts';
 import {parseFetchAndJq,formatBadges} from "./Controller.mjs";
 import { parseArgs } from "jsr:@std/cli/parse-args";
 import timespan from 'npm:timespan-parser@1.2.0';
 import fetchCached from 'npm:fetch-cached@2.0.3';
+const jq = await jqInit({wasmBinary:jqWasm});
+jq.promised = {raw:jq.raw};
 function promisifySync(o) {
   const ret = {};
   for (const key of Object.getOwnPropertyNames(Object.getPrototypeOf(o))) {

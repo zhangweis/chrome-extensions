@@ -69,7 +69,8 @@ h2 span:not(:first-child):before {
 }
 </style>
 <script type='typescript'>
-import jq from "jq-web";
+import jqInit from "./jq.js";
+import jqWasm from './jq.wasm?buffer';
 import queryString from "query-string";
 import {parseFetchAndJq, formatBadges} from "./Controller";
 import forceArray from "force-array";
@@ -83,7 +84,11 @@ import "vue-loading-overlay/dist/css/index.css";
 import titleize from 'titleize';
 var oldTitle = document.title;
 const rxCommonMarkLink = /(\[([^\]]+)])\(([^)]+)\)/g;
-
+var jq;
+async function loadJq(){
+jq  = await jqInit({wasmBinary:jqWasm});
+jq.promised = {raw:jq.raw};
+}
 function commonMarkLinkToAnchorTag(md) {
    
   var anchor = md;
@@ -143,6 +148,7 @@ export default {
   },
   async created() {
     window.addEventListener('unload', this.onunload);
+    await loadJq();
     this.curlAndJq();
   },
   methods: {
@@ -158,7 +164,7 @@ export default {
     },
     async toContentJson() {
         let contentJson =JSON.stringify(this.content); 
-        contentJson = await jq.promised.raw(contentJson,".");
+        contentJson = await jq.raw(contentJson,".");
         return contentJson;
     },
     async copyJson() {
