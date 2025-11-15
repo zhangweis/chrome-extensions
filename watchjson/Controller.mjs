@@ -94,6 +94,7 @@ function signalTimeout(context) {
     var last = {result:on};
     var results = [];
     for (var filter of filters) {
+      if (filter.trim()=="") filter = ".";
       last = await parseFetchAndJqSingle(filter,context,last.result);
       results.push(last);
     }

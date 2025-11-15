@@ -69,8 +69,8 @@ h2 span:not(:first-child):before {
 }
 </style>
 <script type='typescript'>
-import jqInit from "./jq.js";
-import jqWasm from './jq.wasm?buffer';
+  import {loadJq} from "./jq.js";
+import jqWasm from "./jq.wasm?buffer";
 import queryString from "query-string";
 import {parseFetchAndJq, formatBadges} from "./Controller";
 import forceArray from "force-array";
@@ -84,11 +84,6 @@ import "vue-loading-overlay/dist/css/index.css";
 import titleize from 'titleize';
 var oldTitle = document.title;
 const rxCommonMarkLink = /(\[([^\]]+)])\(([^)]+)\)/g;
-var jq;
-async function loadJq(){
-jq  = await jqInit({wasmBinary:jqWasm});
-jq.promised = {raw:jq.raw};
-}
 function commonMarkLinkToAnchorTag(md) {
    
   var anchor = md;
@@ -148,7 +143,6 @@ export default {
   },
   async created() {
     window.addEventListener('unload', this.onunload);
-    await loadJq();
     this.curlAndJq();
   },
   methods: {
@@ -192,7 +186,7 @@ export default {
       this.loading = true;
       this.error = "";
       try {
-        var {result, fetches, fetchOptions, originFetchOption, context} = await parseFetchAndJq(this.source,{jq});
+        var {result, fetches, fetchOptions, originFetchOption, context} = await parseFetchAndJq(this.source,{jq:await loadJq(jqWasm)});
         var styles = [].concat.apply([],fetchOptions.map(({_styles = []})=>Array.isArray(_styles)?_styles:[]));
         this.style = styles;
         this.elementStyles = (result.styles||{});

@@ -6,8 +6,9 @@ import * as hungryFetch from 'https://esm.sh/hungry-fetch@0.9.2';
 import mockdate from 'mockdate'
 import chai,{expect} from 'chai';
 //import jq from "jq-web";
-import jq from "https://raw.githubusercontent.com/zhangweis/deno-tools/main/jq.asm.bundle.js";
+//import jq from "https://raw.githubusercontent.com/zhangweis/deno-tools/main/jq.asm.bundle.js";
 import chaiAsPromised from 'chai-as-promised';
+import {loadJq} from "../jq.js";
 /*import {
   afterEach,
   beforeEach,
@@ -18,7 +19,7 @@ import chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 
 async function parseFetchAndJq(filter,context={},on) {
-  return await originParse(filter,{...context,jq},on);
+  return await originParse(filter,{...context,jq:await loadJq()},on);
 }
 async function formatBadges(badges) {
   return orginFormatBadges(badges);

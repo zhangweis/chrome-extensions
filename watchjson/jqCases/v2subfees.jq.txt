@@ -1,0 +1,18 @@
+{importsContext:["https://bts.dexfree.com/john/jqs/functions.jq.txt"]}
+>>>
+{base:10,quote:1,supply:0.1}|lp(10)|.lastL=3|v2subfee(6)
+>>>
+{expected:
+{
+  "base": 9.914472163417523,
+  "quote": 0.9914472163417523,
+  "supply": 0.1,
+  "price": 0.1,
+  "L": 3.1352313834736494,
+  "future": 10,
+  "futureBase": 1,
+  "lastL": 3,
+  "LPS": 31.352313834736492
+}
+,actual:.
+}
