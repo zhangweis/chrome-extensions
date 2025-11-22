@@ -14,7 +14,7 @@
     <pre v-if="error" class='error'>{{error}}</pre>
     <div class='headers'>
       <h2>
-        {{ title&&(title+" - ") }}<span v-for="item in badge" :key="item">{{ item }}</span>
+        {{ title&&(title+" - ") }}<span v-for="item in badge">{{ item }}</span>
   <span v-if="!badge">Curl And JQ!</span>
       </h2>
     </div>

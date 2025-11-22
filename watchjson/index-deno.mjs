@@ -1,4 +1,5 @@
 import {loadJq} from "./jq.js";
+import jqWasm from './jq.wasm' with {type:"bytes"};
 import { getStdin } from 'https://deno.land/x/get_stdin@v1.1.0/mod.ts';
 import {parseFetchAndJq,formatBadges} from "./Controller.mjs";
 import { parseArgs } from "jsr:@std/cli/parse-args";
@@ -21,7 +22,7 @@ const fetchImpl = fetchCached.default({
 });
 
 export async function curlJq(input, params) {
-  return await parseFetchAndJq(input,{jq:await loadJq(),fetch:fetchImpl,...params});
+  return await parseFetchAndJq(input,{jq:await loadJq(jqWasm),fetch:fetchImpl,...params});
 }
 if (import.meta.main) {
 const args = parseArgs(Deno.args,{default:{timeout:"30s"}});
