@@ -158,7 +158,7 @@ export default {
     },
     async toContentJson() {
         let contentJson =JSON.stringify(this.content); 
-        contentJson = await jq.raw(contentJson,".");
+        contentJson = await (await loadJq(jqWasm)).raw(contentJson,".");
         return contentJson;
     },
     async copyJson() {
