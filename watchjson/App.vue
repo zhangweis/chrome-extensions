@@ -44,13 +44,20 @@
       "
     >
       <button style="font-size: 2em" @click="handleIt">Curl And JQ</button>
-      <a @click="showText = !showText">
+      <a @click="showText = !showText;handleJson()">
         Script <span v-if="showText">^</span><span v-else>V</span>
       </a>
     </div>
-    <textarea style="font-size: 0.8em" v-model="source" cols="80" rows="20" v-show="showText" id="source">
-    </textarea>
     <div v-show="showText">
+      <div v-show="json">
+      <JsonEditorVue
+           class="my-json-editor"
+    v-model="json"
+    :mainMenuBar="false" :navigationBar="false" :statusBar="false" :askToFormat="false"
+    />
+      </div>
+    <textarea style="font-size: 0.8em" v-model="source" cols="80" rows="20" id="source">
+    </textarea>
       <div v-html="debugHtml"></div>
       <hr/>
       <div v-html="fromsHtml" v-show="showText"></div>
@@ -61,6 +68,10 @@
   </div>
 </template>
 <style scoped>
+  .my-json-editor {
+    --jse-font-size-mono: 48px;
+  }
+
 div#main {
   font-size: 3em;
 }
@@ -82,6 +93,8 @@ import markdownLinkify from "markdown-linkify";
 import Loading from "vue-loading-overlay";
 import "vue-loading-overlay/dist/css/index.css";
 import titleize from 'titleize';
+import JsonEditorVue from 'json-editor-vue'
+
 var oldTitle = document.title;
 const rxCommonMarkLink = /(\[([^\]]+)])\(([^)]+)\)/g;
 function commonMarkLinkToAnchorTag(md) {
@@ -102,6 +115,7 @@ if(typeof String.prototype.replaceAll === "undefined") {
 export default {
   components: {
     Loading,
+    JsonEditorVue
   },
   data() {
     const parsed = queryString.parse(location.search);
@@ -138,6 +152,7 @@ export default {
       css:[],
       error:"",
       style: "",
+      json:null,
       elementStyles:{}
     };
   },
@@ -145,9 +160,22 @@ export default {
     window.addEventListener('unload', this.onunload);
     this.curlAndJq();
   },
+  watch: {
+    json(newValue, oldValue) {
+      this.source = JSON.stringify(this.json)+"\n>>>"+this.source.split(">>>")[1];
+    }
+  }
+  ,
   methods: {
     onunload() {
       this.isRefreshing = true;
+    },
+    async handleJson() {
+    try{
+      this.json=JSON.parse(this.source.split(">>>")[0]);
+      }catch(e){
+      this.json=null
+      }
     },
     async handleIt() {
       const parsed = location.hash.substring(1);
