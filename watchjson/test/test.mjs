@@ -3,6 +3,7 @@ import assert from 'node:assert';
 import {parseFetchAndJq as originParse, formatBadges as orginFormatBadges} from "../Controller.mjs";
 //import hungryFetch from './hungry-fetch.js';
 import * as hungryFetch from 'https://esm.sh/hungry-fetch@0.9.2';
+import jqWasm from '../jq.wasm' with {type:"bytes"}; 
 import mockdate from 'mockdate'
 import chai,{expect} from 'chai';
 //import jq from "jq-web";
@@ -19,7 +20,7 @@ import {loadJq} from "../jq.js";
 chai.use(chaiAsPromised);
 
 async function parseFetchAndJq(filter,context={},on) {
-  return await originParse(filter,{...context,jq:await loadJq()},on);
+  return await originParse(filter,{...context,jq:await loadJq(jqWasm)},on);
 }
 async function formatBadges(badges) {
   return orginFormatBadges(badges);
@@ -34,7 +35,17 @@ describe('parseFetchAndJq', function() {
   beforeEach(() => {
     hungryFetch.clear();
    });
-    it('supports function import', async function() {
+//write a test for empty segment be treated as "."
+  it('empty segment as dot', async function() {
+      var {result} = await parseFetchAndJq(`
+      {urls:[{data:"data"}]}
+      >>>
+      `
+      );
+      assert.deepStrictEqual(result,["data"]);
+  });
+
+  it('supports function import', async function() {
       hungryFetch.mockResponse('function.txt', `def abc:1;`);
       var {result} = await parseFetchAndJq(`
       {imports:["function.txt"]
