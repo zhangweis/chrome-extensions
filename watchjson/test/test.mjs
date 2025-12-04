@@ -322,6 +322,34 @@ describe('pureData', function() {
       );
       assert.deepStrictEqual(result,{data1:{pure:1}});
     });
+   it('from supports type json', async function() {
+      hungryFetch.mockResponse('from', `{
+        "pure":"json"
+      }
+      `);
+      var {options,result} = await parseFetchAndJq(`{
+        from:"from",type:"json"
+      }
+      `
+      );
+      assert.deepStrictEqual(result,{pure:"json"});
+    });
+   it('from type json wont go jq parse', async function() {
+      hungryFetch.mockResponse('from', `{
+        pure:"json"
+      }
+      `);
+     try{
+      var {options,result} = await parseFetchAndJq(`{
+        from:"from",type:"json"
+      }
+      `
+      );
+      assert.fail("should fail as jq is error");
+     }catch(e){
+        expect(e.message).to.include("Expected property name");
+     }
+    });
    it('from supports append', async function() {
       hungryFetch.mockResponse('from', `{
         urls:[{data:{pure:1}}]

@@ -130,7 +130,7 @@ function signalTimeout(context) {
       var {url,content} = await fetchText(fetchOption.from, context)
       context.normalizedFroms=(context.normalizedFroms||[]);
       context.normalizedFroms.push(url);
-      const {originFetchOption:options,result,fetches:fetches1} = await parseFetchAndJq(content,{...context,baseUrl:url},fetchOption.params||on);
+      const {originFetchOption:options,result,fetches:fetches1} = (fetchOption.type=="json")?({options:fetchOption,result:JSON.parse(content),fetches:[]}):await parseFetchAndJq(content,{...context,baseUrl:url},fetchOption.params||on);
       fetches = fetches1;
       finalResult = result;
       if (fetchOption.fromjq){
