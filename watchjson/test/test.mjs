@@ -226,6 +226,32 @@ describe('pureData', function() {
 
       assert.deepStrictEqual(result,[{ok:1}]);
     });
+    it('supports get headers', async function() {
+      hungryFetch.mockResponse('get', `{"ok":1}`);
+      var {result} = await parseFetchAndJq(`
+      {
+        urls:[{url:"get",headers:{header1:1}}]
+      }
+      `
+      );
+      const call = hungryFetch.singleCall();
+      expect(call.request.headers).to.deep.equal({header1:1});
+
+      assert.deepStrictEqual(result,[{ok:1}]);
+    });
+    it('from supports post object as body', async function() {
+      hungryFetch.mockResponse('post', `{"ok":1}`);
+      var {result} = await parseFetchAndJq(`
+      {
+        from:"post",body:{body:1}
+      }
+      `
+      );
+      const call = hungryFetch.singleCall();
+      expect(call.json()).to.deep.equal({body:1});
+
+      assert.deepStrictEqual(result,{ok:1});
+    });
 /*    it('supports data urls', async function() {
       var {result} = await parseFetchAndJq(`
       {

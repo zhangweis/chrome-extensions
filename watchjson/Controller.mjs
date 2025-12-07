@@ -12,18 +12,7 @@ async function importFunctions(context,imports) {
     );
     return importText.join("");
 }
-    async function fetchAndJq(fetchOption,context) {
-    const {asIs, imports = [],importsContext, urls, jq: jqPath1="." } = fetchOption;
-
-    if (importsContext) {
-      context.functions=(context.functions||"")+await importFunctions(context, importsContext);
-    }
-    if (asIs) return {result:asIs, fetches:[]};
-    if (!urls) return {result:fetchOption,fetches:[fetchOption]};
-    var importText = await importFunctions(context,imports);
-    var jqPath = importText + jqPath1;
-    var json = await Promise.all(
-      urls.map(async (urlToGo) => {
+  async function fetchUrl(urlToGo,context) {
         if (typeof urlToGo == "string") urlToGo = { url: urlToGo, method: "get" };
         // console.log("fetching ", urlToGo.url);
         if (typeof urlToGo.body == "object") {
@@ -36,7 +25,19 @@ async function importFunctions(context,imports) {
         var json =
           urlToGo.data || (await fetchJson(urlToGo,context));
         return json;
-      })
+  }
+    async function fetchAndJq(fetchOption,context) {
+    const {asIs, imports = [],importsContext, urls, jq: jqPath1="." } = fetchOption;
+
+    if (importsContext) {
+      context.functions=(context.functions||"")+await importFunctions(context, importsContext);
+    }
+    if (asIs) return {result:asIs, fetches:[]};
+    if (!urls) return {result:fetchOption,fetches:[fetchOption]};
+    var importText = await importFunctions(context,imports);
+    var jqPath = importText + jqPath1;
+    var json = await Promise.all(
+      urls.map(async (url) => {return await fetchUrl(url,context)})
     );
     try {
     var result = await callJq(json, jqPath, context);
@@ -127,6 +128,9 @@ function signalTimeout(context) {
       context.args=Object.assign({},context.args,fetchOption.args);
     }
     if (fetchOption.from) {
+      if (fetchOption.body) {
+        finalResult = await fetchUrl({url:fetchOption.from,...fetchOption},context);
+      } else {
       var {url,content} = await fetchText(fetchOption.from, context)
       context.normalizedFroms=(context.normalizedFroms||[]);
       context.normalizedFroms.push(url);
@@ -137,6 +141,7 @@ function signalTimeout(context) {
         finalResult = await callJq(finalResult, fetchOption.fromjq);
       }
       originFetchOption = { ...originFetchOption, froms: options };
+      }
     } else {
       var result = await fetchAndJq(fetchOption, context);
       fetches = result.fetches;
