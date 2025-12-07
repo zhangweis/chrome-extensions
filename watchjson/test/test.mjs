@@ -360,6 +360,16 @@ describe('pureData', function() {
       );
       assert.deepStrictEqual(result,{pure:"json"});
     });
+   it('from supports type text', async function() {
+      hungryFetch.mockResponse('from', `pure text`
+        );
+      var {options,result} = await parseFetchAndJq(`{
+        from:"from",type:"text"
+      }
+      `
+      );
+      assert.deepStrictEqual(result,"pure text");
+    });
    it('from type json wont go jq parse', async function() {
       hungryFetch.mockResponse('from', `{
         pure:"json"
