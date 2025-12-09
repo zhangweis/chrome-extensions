@@ -20,7 +20,7 @@
     </div>
     <div class='actions-top'
       style="
-        width: 20em;
+        max-width: 20em;
         display: flex;
         align-items: flex-end;
         flex-wrap: wrap;
@@ -35,7 +35,7 @@
     <div v-html="contentHtml" id="content"></div>
     <div
       style="
-        width: 20em;
+        max-width: 20em;
         display: flex;
         align-items: flex-end;
         flex-wrap: wrap;
