@@ -13,7 +13,7 @@
     <loading :active.sync="loading" :is-full-page="true"></loading>
     <pre v-if="error" class='error'>{{error}}</pre>
     <div class='headers'>
-      <h2 style='font-size: clamp(1.5em, 5vw, 999px);'>
+      <h2 style='font-size: clamp(1.5em, 5vw, 3em);'>
         {{ title&&(title+" - ") }}<span v-for="item in badge">{{ item }}</span>
   <span v-if="!badge">Curl And JQ!</span>
       </h2>
