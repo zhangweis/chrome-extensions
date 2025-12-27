@@ -7,6 +7,7 @@ async function parseFetchAndJq(filter1,context={},on={}) {
 async function importFunctions(context,imports) {
     var importText = await Promise.all(
       imports.map(async (url) => {
+        addContextFrom(context, url);
         return (await fetchText(url, context)).content;
       })
     );
@@ -118,6 +119,10 @@ function signalTimeout(context) {
     var ret = result.length>0?result.pop():{fetchOptions:[{}],context};
     return Object.assign(ret,{result:results});
   }
+  function addContextFrom(context, url) {
+      context.normalizedFroms=(context.normalizedFroms||[]);
+      context.normalizedFroms.push(url);
+  }
   async function parseFetchAndJqSingleElement(fetchOption,context,on) {
     let originFetchOption = { ...fetchOption};
     var fetchOptions = [fetchOption];
@@ -132,8 +137,7 @@ function signalTimeout(context) {
         finalResult = await fetchUrl({url:fetchOption.from,...fetchOption},context);
       } else {
       var {url,content} = await fetchText(fetchOption.from, context)
-      context.normalizedFroms=(context.normalizedFroms||[]);
-      context.normalizedFroms.push(url);
+      addContextFrom(context, url);
       const {originFetchOption:options,result,fetches:fetches1} = (fetchOption.type=="json"||fetchOption.type=="text")?({options:fetchOption,result:fetchOption.type=="json"?JSON.parse(content):content,fetches:[]}):await parseFetchAndJq(content,{...context,baseUrl:url},fetchOption.params||on);
       fetches = fetches1;
       finalResult = result;
