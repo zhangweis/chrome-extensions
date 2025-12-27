@@ -7,8 +7,9 @@ async function parseFetchAndJq(filter1,context={},on={}) {
 async function importFunctions(context,imports) {
     var importText = await Promise.all(
       imports.map(async (url) => {
-        addContextFrom(context, url);
-        return (await fetchText(url, context)).content;
+        var {content, url:normalizedUrl} = await fetchText(url, context);
+        addContextFrom(context, normalizedUrl);
+        return content;
       })
     );
     return importText.join("");
