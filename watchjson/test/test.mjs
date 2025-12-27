@@ -59,7 +59,7 @@ describe('parseFetchAndJq', function() {
     it('import as context functions', async function() {
       hungryFetch.mockResponse('http://site/a/function.txt', `def abc:1;`);
       var {context,result} = await parseFetchAndJq(`
-      {importsContext:["./function.txt"]}
+      {importsContext:["./function.txt","./function.txt"]}
       >>>
       abc
       `
