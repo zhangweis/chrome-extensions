@@ -57,15 +57,16 @@ describe('parseFetchAndJq', function() {
       assert.deepStrictEqual(result,1);
     });
     it('import as context functions', async function() {
-      hungryFetch.mockResponse('function.txt', `def abc:1;`);
+      hungryFetch.mockResponse('http://site/a/function.txt', `def abc:1;`);
       var {context,result} = await parseFetchAndJq(`
-      {importsContext:["function.txt"]}
+      {importsContext:["./function.txt"]}
       >>>
       abc
       `
+      ,{baseUrl:'http://site/a/a.jq.txt'}
       );
       assert.deepStrictEqual(result,1);
-    assert.deepStrictEqual(context.normalizedFroms,["function.txt"]);
+    assert.deepStrictEqual(context.normalizedFroms,["http://site/a/function.txt"]);
     });
 /*    it('import as context functions keeps original value', async function() {
       hungryFetch.mockResponse('function.txt', `def abc:1;`);
