@@ -525,11 +525,14 @@ describe('pureData', function() {
       hungryFetch.mockResponse('http://site/one/from1', `
       {from:"./from0"}
       `);
+      hungryFetch.mockResponse('http://site/one/from2', `
+      [{from:"./from1"},{from:"./from1"}]
+      `);
       var {originFetchOption,context} = await parseFetchAndJq(`
-      {from:"../from1"}
+      {from:"../from2"}
       `,{baseUrl:'http://site/one/two/abc.jq.txt'}
       );
-      assert.deepStrictEqual(context.normalizedFroms,["http://site/one/from1","http://site/one/from0"]);
+      assert.deepStrictEqual(context.normalizedFroms,["http://site/one/from2","http://site/one/from1","http://site/one/from0"]);
     });
     it('from supports data input', async function() {
       hungryFetch.mockResponse('from', `
