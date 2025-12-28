@@ -122,8 +122,8 @@ function signalTimeout(context) {
   }
   function addContextFrom(context, url) {
       context.normalizedFroms=(context.normalizedFroms||[]);
-      context.normalizedFroms.push(url);
-    context.normalizedFroms=[...new Set(context.normalizedFroms)]
+      if (!context.normalizedFroms.includes(url))context.normalizedFroms.push(url);
+//    context.normalizedFroms=[...new Set(context.normalizedFroms)]
   }
   async function parseFetchAndJqSingleElement(fetchOption,context,on) {
     let originFetchOption = { ...fetchOption};
