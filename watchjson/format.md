@@ -88,7 +88,7 @@
   "from": "https://api.example.com/data",
   "type": "json"
 }>>>
-.[0] | {name: .name, value: .value}
+{name: .name, value: .value}
 ```
 
 ---
@@ -113,7 +113,7 @@
   "from": "https://api.example.com/data",
   "type": "json"
 }>>>
-.[0] | {name, value}
+{name, value}
 ```
 
 **基本用法**：
@@ -664,4 +664,4 @@ format_value(.price)
 6. **超时处理**：请求失败会自动重试一次，默认超时 30 秒
 7. **不推荐字段**：`urls` 和 `jq` 字段不推荐使用，推荐使用 `from` + 链式操作 `>>>` 替代：
    - 旧写法：`{"urls": ["url"], "jq": ".[0]"}`
-   - 新写法：`{from: "url", type: "json"}>>>.[0]`
+   - 新写法：`{from: "url", type: "json"}>>>`

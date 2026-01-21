@@ -15,14 +15,15 @@
 通过 stdin 输入配置，输出处理后的 JSON 数据：
 
 ```bash
-echo '配置内容' | deno run --allow-net --no-lock --unstable-raw-imports index-deno.mjs
+echo 'pipeline配置' | deno run --allow-net --no-lock --unstable-raw-imports index-deno.mjs
 ```
 
 ### 示例：获取港股价格
 
 ```bash
 echo '{
-  "urls": ["https://qt.gtimg.cn/q=hk00883"]
+  "from": "https://qt.gtimg.cn/q=hk00883",
+  "type": "json"
 }>>>
 .[0] | split("~")
 >>>
@@ -69,9 +70,10 @@ echo '{
 
 ```json
 {
-  "urls": ["https://api.example.com/data"],
-  "jq": ".[0] | {name: .name, value: .value}"
-}
+  "from": "https://api.example.com/data",
+  "type": "json"
+}>>>
+{name: .name, value: .value}
 ```
 
 ### 链式操作
@@ -80,10 +82,9 @@ echo '{
 
 ```json
 {
-  "urls": ["https://api.example.com/data"]
+  "from": "https://api.example.com/data",
+  "type": "json"
 }>>>
-.[0]    // 纯 jq 表达式段落
->>>
 {name: .name, itemCount: (.items | length)}  // 纯 jq 表达式段落
 >>>
 {
@@ -97,8 +98,8 @@ echo '{
 
 | 字段 | 说明 |
 |------|------|
-| urls | 要请求的 URL 数组 |
-| jq | JQ 转换表达式 |
+| from | 要请求的 URL（推荐） |
+| type | 数据类型，如 "json" |
 | title | ���面标题 |
 | badge | 徽章显示（二维数组） |
 | content | 内容数据 |
@@ -145,30 +146,32 @@ cat config.json | deno run --allow-net --no-lock --unstable-raw-imports index-de
 
 ```json
 {
-  "urls": ["https://api.github.com/users/github"],
-  "jq": "{name, login, bio}"
-}
+  "from": "https://api.github.com/users/github",
+  "type": "json"
+}>>>
+{name, login, bio}
 ```
 
 ### GraphQL POST 请求
 
 ```json
 {
-  "urls": [{
-    "url": "https://api.example.com/graphql",
-    "body": {
-      "query": "query { user(id: 1) { name email } }"
-    }
-  }],
-  "jq": ".data.user"
-}
+  "from": "https://api.example.com/graphql",
+  "type": "json",
+  "method": "POST",
+  "body": {
+    "query": "query { user(id: 1) { name email } }"
+  }
+}>>>
+.data.user
 ```
 
 ### 使用变量替换
 
 ```json
 {
-  "urls": [{"url": "https://api.example.com/data?t=${timestamp}"}]
+  "from": "https://api.example.com/data?t=${timestamp}",
+  "type": "json"
 }
 ```
 
