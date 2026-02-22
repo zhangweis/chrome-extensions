@@ -23,9 +23,9 @@ echo 'pipeline配置' | deno run --allow-net --no-lock --unstable-raw-imports in
 ```bash
 echo '{
   "from": "https://qt.gtimg.cn/q=hk00883",
-  "type": "json"
+  "type": "text"
 }>>>
-.[0] | split("~")
+split("~")
 >>>
 {
   "title": "中国海洋石油 00883",

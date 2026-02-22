@@ -86,7 +86,18 @@ function signalTimeout(context) {
     url = getUrl(url, context);
 
     try {
-    const content = await (await fetchImpl(url,{signal: signalTimeout(context)})).text();
+    const resp = await fetchImpl(url,{signal: signalTimeout(context)});
+    const contentType = resp.headers.get("content-type") || "";
+    let content;
+
+    // Check if GBK encoding is specified
+    if (contentType.toLowerCase().includes("gbk") || contentType.toLowerCase().includes("gb2312") || contentType.toLowerCase().includes("gb18030")) {
+      const buffer = await resp.arrayBuffer();
+      content = new TextDecoder("gbk").decode(buffer);
+    } else {
+      content = await resp.text();
+    }
+
     return {content,url};
     } catch (e) {
       throw new Error(`baseUrl:${context.baseUrl},url:${url},status:${e}`);

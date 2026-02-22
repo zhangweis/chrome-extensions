@@ -86,18 +86,9 @@ import markdownLinkify from "markdown-linkify";
 import Loading from "vue-loading-overlay";
 import "vue-loading-overlay/dist/css/index.css";
 import titleize from 'titleize';
+import { commonMarkLinkToAnchorTag } from './src/utils/markdown.js';
 
 var oldTitle = document.title;
-const rxCommonMarkLink = /(\[([^\]]+)])\(([^)]+)\)/g;
-function commonMarkLinkToAnchorTag(md) {
-   
-  var anchor = md;
-  if (!md.match(rxCommonMarkLink)) 
-    anchor = markdownLinkify(md);
-  anchor = anchor.replace( rxCommonMarkLink , '<a href="$3" target="_blank"> $2 </a>' )
-    ;
-  return anchor;
-}
 if(typeof String.prototype.replaceAll === "undefined") {
     String.prototype.replaceAll = function(match, replace) {
        return this.replace(new RegExp(match, 'g'), () => replace);
