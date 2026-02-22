@@ -3,7 +3,8 @@
     "serve": "deno run -A npm:vite serve --config ./vite.config.mjs --host 0.0.0.0",
     "preview": "deno run -A npm:vite preview --config ./vite.config.mjs --host 0.0.0.0",
     "build": "deno run -A npm:vite build --config ./vite.config.mjs",
-    "test": "deno run -A --unstable-raw-imports npm:mocha ./test/test.mjs --timeout 5000",
+    "test-controller": "deno run -A --unstable-raw-imports npm:mocha ./test/test.mjs --timeout 5000",
+    "test": "deno task test-controller && deno task test-markdown && deno task jq-test",
     "test-markdown": "deno test --allow-read --unstable-raw-imports --no-check test/test-markdown.mjs",
     "jq-test": "deno run -A --unstable-raw-imports npm:mocha ./jqCases/test.mjs --timeout 5000"
   },
