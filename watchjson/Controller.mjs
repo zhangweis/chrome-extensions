@@ -80,7 +80,10 @@ function signalTimeout(context) {
     if (baseUrl) {
       url = new URL(url, baseUrl).href;
     }
-    return url.replaceAll(/\${(t|timestamp)}/g,Number(new Date()));
+    if (!context.disableTimestampReplacement) {
+      url = url.replaceAll(/\${(t|timestamp)}/g, Number(new Date()));
+    }
+    return url;
   }
   async function fetchText(url, context) {
     url = getUrl(url, context);

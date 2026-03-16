@@ -319,6 +319,16 @@ describe('pureData', function() {
       );
       assert.deepStrictEqual(result,["text"]);
     });
+    it('supports disableTimestampReplacement', async function() {
+      hungryFetch.mockResponse('http://site/one/two/text.txt?t=${timestamp}', `text`);
+      var {result} = await parseFetchAndJq(`
+      {
+        urls:[{url:"./text.txt?t=\${timestamp}"}]
+      }
+      `,{baseUrl:'http://site/one/two/abc.jq.txt',disableTimestampReplacement:true}
+      );
+      assert.deepStrictEqual(result,["text"]);
+    });
 
   });
   });

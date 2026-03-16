@@ -27,7 +27,7 @@ export async function curlJq(input, params) {
 if (import.meta.main) {
 const args = parseArgs(Deno.args,{default:{timeout:"30s"}});
 const input = await getStdin({exitOnEnter: false});
-var {result} = await curlJq(input, {timeout:timespan.parse(args.timeout,"msec")});
+var {result} = await curlJq(input, {timeout:timespan.parse(args.timeout,"msec"),disableTimestampReplacement:true});
 if (result.badge) {result.formattedBadges = await formatBadges(result.badge);if (!args.k)delete result.badge} 
 console.log(JSON.stringify(result));
 }

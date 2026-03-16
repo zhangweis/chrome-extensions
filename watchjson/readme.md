@@ -168,10 +168,22 @@ cat config.json | deno run --allow-net --no-lock --unstable-raw-imports index-de
 
 ### 使用变量替换
 
+URL 中的 `${t}` 或 `${timestamp}` 会被自动替换为当前时间戳：
+
 ```json
 {
   "from": "https://api.example.com/data?t=${timestamp}",
   "type": "json"
+}
+```
+
+如需禁用自动替换，可以设置 `disableTimestampReplacement: true`：
+
+```json
+{
+  "from": "https://api.example.com/data?t=${timestamp}",
+  "type": "json",
+  "disableTimestampReplacement": true
 }
 ```
 

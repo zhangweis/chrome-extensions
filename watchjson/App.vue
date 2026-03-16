@@ -51,6 +51,10 @@
     <div v-show="showText">
     <textarea style="font-size: 0.8em" v-model="source" cols="80" rows="20" id="source">
     </textarea>
+    <label>
+      <input type="checkbox" v-model="disableTimestampReplacement">
+      Disable Timestamp Replacement
+    </label>
       <div v-html="debugHtml"></div>
       <hr/>
       <div v-html="fromsHtml" v-show="showText"></div>
@@ -121,6 +125,7 @@ export default {
 }`;
     return {
       showText: false,
+      disableTimestampReplacement: false,
       loading: false,
       badge: "",
       title: "",
@@ -185,7 +190,10 @@ export default {
       this.loading = true;
       this.error = "";
       try {
-        var {result, fetches, fetchOptions, originFetchOption, context} = await parseFetchAndJq(this.source,{jq:await loadJq(jqWasm)});
+        var {result, fetches, fetchOptions, originFetchOption, context} = await parseFetchAndJq(this.source,{
+          jq:await loadJq(jqWasm),
+          disableTimestampReplacement:this.disableTimestampReplacement
+        });
         var styles = [].concat.apply([],fetchOptions.map(({_styles = []})=>Array.isArray(_styles)?_styles:[]));
         this.style = styles;
         this.elementStyles = (result.styles||{});
