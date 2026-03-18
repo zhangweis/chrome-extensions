@@ -51,8 +51,8 @@
     <div v-show="showText">
     <textarea style="font-size: 0.8em" v-model="source" cols="80" rows="20" id="source">
     </textarea>
-    <label>
-      <input type="checkbox" v-model="disableTimestampReplacement">
+    <label style="display: block; margin-top: 8px;">
+      <input type="checkbox" v-model="disableTimestampReplacement" style="width: 4em; height: 4em;">
       Disable Timestamp Replacement
     </label>
       <div v-html="debugHtml"></div>
@@ -125,7 +125,7 @@ export default {
 }`;
     return {
       showText: false,
-      disableTimestampReplacement: false,
+      disableTimestampReplacement: localStorage.getItem("disableTimestampReplacement") === "true",
       loading: false,
       badge: "",
       title: "",
@@ -147,6 +147,9 @@ export default {
     this.curlAndJq();
   },
   watch: {
+    disableTimestampReplacement(newVal) {
+      localStorage.setItem("disableTimestampReplacement", String(newVal));
+    }
   }
   ,
   methods: {

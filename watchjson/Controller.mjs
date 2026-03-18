@@ -157,10 +157,10 @@ function signalTimeout(context) {
       const {originFetchOption:options,result,fetches:fetches1} = (fetchOption.type=="json"||fetchOption.type=="text")?({options:fetchOption,result:fetchOption.type=="json"?JSON.parse(content):content,fetches:[]}):await parseFetchAndJq(content,{...context,baseUrl:url},fetchOption.params||on);
       fetches = fetches1;
       finalResult = result;
+      originFetchOption = { ...originFetchOption, froms: options };
+      }
       if (fetchOption.fromjq){
         finalResult = await callJq(finalResult, fetchOption.fromjq);
-      }
-      originFetchOption = { ...originFetchOption, froms: options };
       }
     } else {
       var result = await fetchAndJq(fetchOption, context);
