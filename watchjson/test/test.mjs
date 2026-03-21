@@ -1,6 +1,6 @@
 //import assert from 'assert';
 import assert from 'node:assert';
-import {parseFetchAndJq as originParse, formatBadges as orginFormatBadges} from "../Controller.mjs";
+import {parseFetchAndJq as originParse, formatBadges as orginFormatBadges} from "../Controller.js";
 //import hungryFetch from './hungry-fetch.js';
 import * as hungryFetch from 'https://esm.sh/hungry-fetch@0.9.2';
 import jqWasm from '../jq.wasm' with {type:"bytes"}; 

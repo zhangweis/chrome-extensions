@@ -1,7 +1,7 @@
 import {loadJq} from "./jq.js";
 import jqWasm from './jq.wasm' with {type:"bytes"};
 import { getStdin } from 'https://deno.land/x/get_stdin@v1.1.0/mod.ts';
-import {parseFetchAndJq,formatBadges} from "./Controller.mjs";
+import {parseFetchAndJq,formatBadges} from "./Controller.js";
 import { parseArgs } from "jsr:@std/cli/parse-args";
 import timespan from 'npm:timespan-parser@1.2.0';
 import fetchCached from 'npm:fetch-cached@2.0.3';

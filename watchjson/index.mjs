@@ -1,7 +1,7 @@
 import jq from "jq-web";
 import getStdin from 'get-stdin';
 import fetch from 'node-fetch';
-import {parseFetchAndJq} from "./Controller.mjs";
+import {parseFetchAndJq} from "./Controller.js";
 global.fetch=fetch;
 var input = await getStdin();
 var result = await parseFetchAndJq(input,{jq});
