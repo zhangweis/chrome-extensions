@@ -77,20 +77,37 @@ h2 span:not(:first-child):before {
 }
 </style>
 <script type='typescript'>
-  import {loadJq} from "./jq.js";
-import jqWasm from "./jq.wasm?buffer";
 import queryString from "query-string";
-import {parseFetchAndJq, formatBadges} from "./Controller";
 import forceArray from "force-array";
 import tableify from "tableify";
 // import * as setQuery from "set-query-string";
 import setLocationHash from "set-location-hash";
 import linkify from "html-linkify";
-import markdownLinkify from "markdown-linkify";
 import Loading from "vue-loading-overlay";
 import "vue-loading-overlay/dist/css/index.css";
 import titleize from 'titleize';
-import { commonMarkLinkToAnchorTag } from './src/utils/markdown.js';
+import { commonMarkLinkToAnchorTag } from '@/src/utils/markdown.js';
+
+// 静态import - 通过alias mapping自动处理环境
+import { loadJq } from '@/jq.js';
+import { parseFetchAndJq, formatBadges } from '@/Controller.js';
+
+// WASM URL - 根据环境自动选择
+const wasmUrl = import.meta.env.PROD
+  ? 'https://cdn.jsdelivr.net/gh/zhangweis/chrome-extensions@main/watchjson/jq.wasm'
+  : '/jq.wasm';  // 开发环境 Vite dev server 会提供
+
+// 统一的WASM加载函数
+const getJqWasm = async () => {
+  const response = await fetch(wasmUrl);
+  return await response.arrayBuffer();
+};
+
+// 加载JQ实例（封装WASM加载+JQ初始化）
+const loadJqWithWasm = async () => {
+  const jqWasmBuffer = await getJqWasm();
+  return await loadJq(jqWasmBuffer);
+};
 
 var oldTitle = document.title;
 if(typeof String.prototype.replaceAll === "undefined") {
@@ -164,8 +181,9 @@ export default {
       this.curlAndJq();
     },
     async toContentJson() {
-        let contentJson =JSON.stringify(this.content); 
-        contentJson = await (await loadJq(jqWasm)).raw(contentJson,".");
+        let contentJson =JSON.stringify(this.content);
+        const jq = await loadJqWithWasm();
+        contentJson = await jq.raw(contentJson,".");
         return contentJson;
     },
     async copyJson() {
@@ -194,7 +212,7 @@ export default {
       this.error = "";
       try {
         var {result, fetches, fetchOptions, originFetchOption, context} = await parseFetchAndJq(this.source,{
-          jq:await loadJq(jqWasm),
+          jq:await loadJqWithWasm(),
           disableTimestampReplacement:this.disableTimestampReplacement
         });
         var styles = [].concat.apply([],fetchOptions.map(({_styles = []})=>Array.isArray(_styles)?_styles:[]));
