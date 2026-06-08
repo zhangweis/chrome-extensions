@@ -65,12 +65,13 @@
   </div>
 </template>
 <style scoped>
-  .my-json-editor {
-    --jse-font-size-mono: 48px;
-  }
-
 div#main {
-  font-size: 3em;
+  font-size: 1.5em;
+}
+@media (max-width: 1000px) {
+  div#main {
+    font-size: 3em;
+  }
 }
 h2 span:not(:first-child):before {
   content: " | ";
