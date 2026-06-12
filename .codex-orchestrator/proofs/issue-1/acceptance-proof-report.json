@@ -1,0 +1,84 @@
+{
+  "status": "passed",
+  "criteria": [
+    {
+      "id": "controller-coverage-97",
+      "description": "Controller.js line coverage is at least 97% with the focused Deno test suite.",
+      "status": "passed",
+      "confidence": "high",
+      "reasoningSummary": "Fresh Deno coverage evidence reports watchjson/Controller.js at 100.0% line coverage, exceeding the 97% acceptance criterion; the root deno task test also passed. A clean HEAD baseline coverage artifact records Controller.js at 95.7% line coverage before these focused test additions.",
+      "artifactRefs": [
+        ".codex-orchestrator/proofs/issue-1/deno-task-test-root.log",
+        ".codex-orchestrator/proofs/issue-1/deno-task-test-coverage-run.log",
+        ".codex-orchestrator/proofs/issue-1/deno-coverage-summary.log",
+        ".codex-orchestrator/proofs/issue-1/controller-coverage-line.log",
+        ".codex-orchestrator/proofs/issue-1/controller-coverage-proof.html"
+      ]
+    },
+    {
+      "id": "runner-config-present",
+      "description": "Runner-owned acceptance proof can read the worktree-local orchestrator config.",
+      "status": "passed",
+      "confidence": "high",
+      "reasoningSummary": "The missing .codex-orchestrator/config.json that caused the previous ENOENT blocker has been restored in the worktree from the orchestrator config.",
+      "artifactRefs": [
+        ".codex-orchestrator/config.json"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "type": "log",
+      "path": ".codex-orchestrator/proofs/issue-1/deno-task-test-root.log",
+      "description": "Root deno task test passed"
+    },
+    {
+      "type": "log",
+      "path": ".codex-orchestrator/proofs/issue-1/deno-task-test-coverage-run.log",
+      "description": "Deno test run with DENO_COVERAGE_DIR passed"
+    },
+    {
+      "type": "log",
+      "path": ".codex-orchestrator/proofs/issue-1/deno-coverage-summary.log",
+      "description": "Deno coverage summary with Controller.js line coverage"
+    },
+    {
+      "type": "log",
+      "path": ".codex-orchestrator/proofs/issue-1/controller-coverage-line.log",
+      "description": "Controller.js coverage summary line showing 100.0% line coverage"
+    },
+    {
+      "type": "other",
+      "path": ".codex-orchestrator/proofs/issue-1/controller-coverage-proof.html",
+      "description": "Static proof page summarizing the non-visual coverage acceptance criterion"
+    },
+    {
+      "type": "log",
+      "path": ".codex-orchestrator/proofs/issue-1/controller-baseline-coverage-red.log",
+      "description": "Clean HEAD baseline coverage proof showing Controller.js at 95.7% line coverage before these focused test additions"
+    },
+    {
+      "type": "other",
+      "path": ".codex-orchestrator/config.json",
+      "description": "Worktree-local orchestrator config required by runner acceptance artifact checks"
+    }
+  ],
+  "proofPhaseDiff": {
+    "allowedProofPaths": [
+      ".codex-orchestrator/proofs/issue-1/acceptance-proof-report.json",
+      ".codex-orchestrator/proofs/issue-1/browser-proof-scenario.json",
+      ".codex-orchestrator/proofs/issue-1/controller-coverage-proof.html",
+      ".codex-orchestrator/proofs/issue-1/controller-coverage-line.log",
+      ".codex-orchestrator/proofs/issue-1/deno-coverage-detailed.log",
+      ".codex-orchestrator/proofs/issue-1/deno-coverage-summary.log",
+      ".codex-orchestrator/proofs/issue-1/deno-task-test-coverage-run.log",
+      ".codex-orchestrator/proofs/issue-1/deno-task-test-root.log",
+      ".codex-orchestrator/proofs/issue-1/deno-task-test.log",
+      ".codex-orchestrator/proofs/issue-1/playwright-chromium-install.log",
+      ".codex-orchestrator/proofs/issue-1/controller-baseline-coverage-red.log",
+      ".codex-orchestrator/config.json"
+    ],
+    "forbiddenProductPaths": []
+  },
+  "residualRisks": []
+}

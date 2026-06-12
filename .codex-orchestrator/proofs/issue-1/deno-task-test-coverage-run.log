@@ -1,0 +1,103 @@
+Task test deno task test-controller && deno task test-markdown && deno task jq-test
+Task test-controller deno run -A --unstable-raw-imports npm:mocha ./test/test.mjs --timeout 5000
+
+
+  parseFetchAndJq
+    ✔ empty segment as dot (79ms)
+    ✔ supports function import
+    ✔ import as context functions
+    pureData
+      ✔ asIs
+      ✔ simplifiedPureData
+      ✔ pureData
+      ✔ supportsAdd
+      ✔ no jq
+      ✔ returns fetches
+      ✔ array_puredata
+      ✔ parseFetchAndJq
+      ✔ pureData1
+    httpFetch
+      ✔ throws error when status=500
+      ✔ error contains current baseUrl
+      ✔ succeed only once
+      ✔ retries 2times
+      ✔ supports relative url
+      ✔ supports post object as body
+      ✔ supports get headers
+      ✔ from supports post object as body
+      ✔ supports string urls
+      ✔ supports data urls
+      ✔ decodes GBK, GB2312, and GB18030 imports
+      ✔ wraps from fetch errors with context
+      ✔ error contains fetches when jq fails
+      ✔ supports text url
+      timestamp
+        ✔ supports t_only
+        ✔ supports timestamp
+        ✔ supports disableTimestampReplacement
+    fetchFrom
+      ✔ parseFetchAndJq supports from
+      ✔ from supports fromjq
+      ✔ from supports type json
+      ✔ from supports type text
+      ✔ from type json wont go jq parse
+      ✔ from supports append
+      ✔ from supports array append
+      ✔ from supports params
+      ✔ from supports storeAs
+      ✔ supports empty array
+    multiple segments
+      ✔ supports multiple puredata
+      ✔ supportsFunctions
+      ✔ functionsOnContext
+      ✔ supportsDollarContext
+      ✔ normalized from url
+      ✔ nested normalizedUrl
+      ✔ from supports data input
+      ✔ supports multiple
+      ✔ useOriginWhenNoUrls
+      ✔ argsWithoutFromOrUrls
+      ✔ supportsArgs
+      ✔ argsCumulates
+      ✔ recursiveArgs
+      ✔ fetches contain hierarchy
+      ✔ multiple supports from
+      ✔ multiple from supports relative url
+      ✔ from multiple
+      ✔ from wont lose styles
+      ✔ multiple supports function
+    formatBadges
+      ✔ supports string
+      ✔ support string array
+      ✔ supports number
+      ✔ supports number format
+
+
+  62 passing (659ms)
+
+Task test-markdown deno test --allow-read --unstable-raw-imports --no-check test/test-markdown.mjs
+running 1 test from ./test/test-markdown.mjs
+commonMarkLinkToAnchorTag ...
+  should convert CommonMark link to anchor tag ... ok (1ms)
+  should convert multiple CommonMark links ... ok (0ms)
+  should use markdownLinkify for plain URLs ... ok (5ms)
+  should handle text with mixed content ... ok (0ms)
+  should handle links with query parameters ... ok (0ms)
+  should handle links with anchors ... ok (0ms)
+  should handle links with special characters in display text ... ok (0ms)
+  should preserve text outside of CommonMark links ... ok (0ms)
+  should handle empty string ... ok (0ms)
+  should handle text without CommonMark links or URLs ... ok (0ms)
+commonMarkLinkToAnchorTag ... ok (46ms)
+
+ok | 1 passed (10 steps) | 0 failed (93ms)
+
+Task jq-test deno run -A --unstable-raw-imports npm:mocha ./jqCases/test.mjs --timeout 5000
+
+
+  v2subfees/
+    ✔ v2subfees.jq.txt (194ms)
+
+
+  1 passing (198ms)
+

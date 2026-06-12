@@ -1,0 +1,5 @@
+{
+  "tasks": {
+    "test": "cd watchjson && deno task test"
+  }
+}

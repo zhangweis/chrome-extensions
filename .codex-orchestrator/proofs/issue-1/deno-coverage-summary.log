@@ -1,0 +1,9 @@
+| File                   | Branch % | Function % | Line % |
+| ---------------------- | -------- | ---------- | ------ |
+| Controller.js          |     99.2 |       93.3 |  100.0 |
+| index-deno.mjs         |    100.0 |      100.0 |  100.0 |
+| jq.js                  |    100.0 |      100.0 |  100.0 |
+| jqweb.js               |     65.0 |       53.8 |   48.5 |
+| src/utils/markdown.js  |    100.0 |      100.0 |  100.0 |
+| test/test-markdown.mjs |    100.0 |      100.0 |  100.0 |
+| All files              |     71.9 |       56.2 |   52.0 |
