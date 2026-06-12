@@ -254,16 +254,70 @@ describe('pureData', function() {
 
       assert.deepStrictEqual(result,{ok:1});
     });
-/*    it('supports data urls', async function() {
+    it('supports string urls', async function() {
+      hungryFetch.mockResponse('string-url', `text`);
       var {result} = await parseFetchAndJq(`
       {
-        urls:[{url:"data:text/plain;charset=utf-8;base64,dGV4dA=="}]
+        urls:["string-url"]
       }
       `
       );
       assert.deepStrictEqual(result,["text"]);
     });
-*/
+    it('supports data urls', async function() {
+      const calls = [];
+      const fetchImpl = async (url) => {
+        calls.push(url);
+        return new Response('text');
+      };
+      var {result} = await parseFetchAndJq(`
+      {
+        urls:[{url:"data:text/plain;charset=utf-8;base64,dGV4dA=="}]
+      }
+      `,{baseUrl:'http://site/one/two/abc.jq.txt',fetch:fetchImpl}
+      );
+      assert.deepStrictEqual(result,["text"]);
+      assert.deepStrictEqual(calls,["data:text/plain;charset=utf-8;base64,dGV4dA=="]);
+    });
+    it('decodes GBK, GB2312, and GB18030 imports', async function() {
+      const gbkFunction = new Uint8Array([
+        ...new TextEncoder().encode('def chinese:"'),
+        0xd6, 0xd0, 0xce, 0xc4,
+        ...new TextEncoder().encode('";'),
+      ]);
+      for (const charset of ['gbk','gb2312','gb18030']) {
+        const fetchImpl = async () => new Response(gbkFunction, {
+          headers:{'content-type':`text/plain; charset=${charset}`},
+        });
+        var {result} = await parseFetchAndJq(`
+      {
+        imports:["gbk-function"],
+        urls:[],
+        jq:"chinese"
+      }
+        `,{fetch:fetchImpl}
+        );
+        assert.deepStrictEqual(result,"中文");
+      }
+    });
+    it('wraps from fetch errors with context', async function() {
+      const fetchImpl = async () => {
+        throw new Error('network down');
+      };
+      try {
+      await parseFetchAndJq(`
+      {
+        from:"./missing"
+      }
+      `,{baseUrl:'http://site/one/two/abc.jq.txt',fetch:fetchImpl}
+      );
+      assert.fail('should fail as fetch error');
+      } catch (e) {
+        expect(e.message).to.include('baseUrl:http://site/one/two/abc.jq.txt');
+        expect(e.message).to.include('url:http://site/one/two/missing');
+        expect(e.message).to.include('Error: network down');
+      }
+    });
     it('error contains fetches when jq fails', async function() {
       hungryFetch.mockResponse('from', `{
         "data":"data"

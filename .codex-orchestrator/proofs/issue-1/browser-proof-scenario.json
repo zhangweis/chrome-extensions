@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "baseUrl": "http://127.0.0.1",
+  "viewports": [
+    {
+      "name": "desktop",
+      "width": 1280,
+      "height": 720,
+      "requiredBy": "other"
+    }
+  ],
+  "criteria": [
+    {
+      "id": "controller-coverage-97",
+      "description": "Controller.js line coverage is at least 97% with the focused Deno test suite."
+    }
+  ],
+  "sourceInputs": {
+    "acceptanceCriteriaRefs": [
+      "Issue #1 goal: Increase watchjson/Controller.js test coverage to at least 97% line coverage.",
+      "Issue #1 validation: deno task test and deno coverage must pass."
+    ],
+    "implementationEvidenceRefs": [
+      ".codex-orchestrator/proofs/issue-1/deno-task-test.log",
+      ".codex-orchestrator/proofs/issue-1/deno-coverage-summary.log",
+      ".codex-orchestrator/proofs/issue-1/controller-coverage-line.log"
+    ]
+  },
+  "steps": [
+    {
+      "action": "assertText",
+      "text": "Controller.js coverage proof"
+    },
+    {
+      "action": "screenshot",
+      "checkpointId": "controller-coverage-proof-screenshot",
+      "viewportName": "desktop",
+      "path": ".codex-orchestrator/proofs/issue-1/controller-coverage-proof.png",
+      "criteriaRefs": ["controller-coverage-97"]
+    },
+    {
+      "action": "domSnapshot",
+      "checkpointId": "controller-coverage-proof-dom",
+      "viewportName": "desktop",
+      "path": ".codex-orchestrator/proofs/issue-1/controller-coverage-proof-dom.html",
+      "criteriaRefs": ["controller-coverage-97"]
+    }
+  ]
+}
