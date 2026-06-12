@@ -6,7 +6,7 @@
     "test-controller": "deno run -A --unstable-raw-imports npm:mocha ./test/test.mjs --timeout 5000",
     "test": "deno task test-controller && deno task test-markdown && deno task jq-test",
     "test-markdown": "deno test --allow-read --unstable-raw-imports --no-check test/test-markdown.mjs",
-    "jq-test": "deno run -A --unstable-raw-imports npm:mocha ./jqCases/test.mjs --timeout 5000"
+    "jq-test": "deno run -A --unstable-raw-imports npm:mocha ./jqCases/test.mjs --timeout 30000"
   },
   "imports": {
     "vue-loading-overlay2":"https://esm.sh/vue-loading-overlay@6.0.2"

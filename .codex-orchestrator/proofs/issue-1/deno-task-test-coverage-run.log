@@ -3,7 +3,7 @@ Task test-controller deno run -A --unstable-raw-imports npm:mocha ./test/test.mj
 
 
   parseFetchAndJq
-    ✔ empty segment as dot (79ms)
+    ✔ empty segment as dot (91ms)
     ✔ supports function import
     ✔ import as context functions
     pureData
@@ -73,12 +73,12 @@ Task test-controller deno run -A --unstable-raw-imports npm:mocha ./test/test.mj
       ✔ supports number format
 
 
-  62 passing (659ms)
+  62 passing (732ms)
 
 Task test-markdown deno test --allow-read --unstable-raw-imports --no-check test/test-markdown.mjs
 running 1 test from ./test/test-markdown.mjs
 commonMarkLinkToAnchorTag ...
-  should convert CommonMark link to anchor tag ... ok (1ms)
+  should convert CommonMark link to anchor tag ... ok (0ms)
   should convert multiple CommonMark links ... ok (0ms)
   should use markdownLinkify for plain URLs ... ok (5ms)
   should handle text with mixed content ... ok (0ms)
@@ -86,18 +86,18 @@ commonMarkLinkToAnchorTag ...
   should handle links with anchors ... ok (0ms)
   should handle links with special characters in display text ... ok (0ms)
   should preserve text outside of CommonMark links ... ok (0ms)
-  should handle empty string ... ok (0ms)
+  should handle empty string ... ok (1ms)
   should handle text without CommonMark links or URLs ... ok (0ms)
-commonMarkLinkToAnchorTag ... ok (46ms)
+commonMarkLinkToAnchorTag ... ok (48ms)
 
-ok | 1 passed (10 steps) | 0 failed (93ms)
+ok | 1 passed (10 steps) | 0 failed (94ms)
 
-Task jq-test deno run -A --unstable-raw-imports npm:mocha ./jqCases/test.mjs --timeout 5000
+Task jq-test deno run -A --unstable-raw-imports npm:mocha ./jqCases/test.mjs --timeout 30000
 
 
   v2subfees/
-    ✔ v2subfees.jq.txt (194ms)
+    ✔ v2subfees.jq.txt (189ms)
 
 
-  1 passing (198ms)
+  1 passing (194ms)
 
